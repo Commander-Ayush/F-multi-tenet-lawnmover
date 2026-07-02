@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{companyName} – Lawn Care</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- TOAST -->
+<div id="gc-toast" class="toast"></div>
+
+<!-- SIDEBAR MOWER -->
+<div id="sidebar-mower">
+  <img src="lawnmover.png" alt="Lawn Mower">
+  <div id="mower-trail"></div>
+</div>
+
+<!-- NAVBAR -->
+<nav id="navbar">
+  <div id="nav-cut-overlay"></div>
+  <img id="nav-mower" src="lawnmover.png" alt="Nav Mower">
+
+  <div class="nav-inner">
+    <a class="nav-logo" href="index.html">
+      <span class="logo-leaf">🌿</span> <span data-bind="name">GreenCut</span>
+    </a>
+    <button class="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="services.html">Services & Pricing</a></li>
+      <li><a href="reviews.html">Reviews</a></li>
+      <li><a href="booking.html" class="nav-cta">Book Now</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <span class="hero-eyebrow">🏡 Serving <span data-bind="city">your neighborhood</span></span>
+    <h1>Your Lawn Deserves to Look Its Best</h1>
+    <p><span data-bind="name">GreenCut</span> brings friendly, reliable, and professional lawn care right to your doorstep — so you can spend less time mowing and more time enjoying your yard.</p>
+    <div class="hero-btns">
+      <a href="booking.html" class="btn btn-primary">📅 Book a Service</a>
+      <a href="services.html" class="btn btn-outline">See Our Plans</a>
+    </div>
+  </div>
+</section>
+
+<!-- WHY US -->
+<div class="section">
+  <div style="display:flex;align-items:flex-start;gap:64px;flex-wrap:wrap">
+    <div style="flex:1;min-width:280px">
+      <span class="section-tag">Why <span data-bind="name">GreenCut</span>?</span>
+      <h2 class="section-heading">Lawn care that feels like family</h2>
+      <p class="section-sub">We're not a faceless corporation. We're your neighbors — and we treat every yard like it's our own. Professional results, honest pricing, and a smile every visit.</p>
+      <a href="services.html" class="btn btn-green" style="margin-top:28px">Explore Services</a>
+    </div>
+    <div class="card-grid" style="flex:2;min-width:280px;margin-top:0">
+      <div class="card">
+        <div class="card-icon">⏰</div>
+        <h3>Always On Time</h3>
+        <p>We respect your schedule. Our crews arrive in a 30-minute window and never keep you waiting.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">💚</div>
+        <h3>Eco-Friendly Approach</h3>
+        <p>We use low-emission equipment and organic fertilisers wherever possible to protect your family and planet.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🛡️</div>
+        <h3>Fully Insured</h3>
+        <p>Every <span data-bind="name">GreenCut</span> technician is licensed, background-checked, and fully covered so you have total peace of mind.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📲</div>
+        <h3>Easy Online Booking</h3>
+        <p>Book in under two minutes from any device. No phone tag, no hassle — just pick a date and we'll be there.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="stripe-divider"></div>
+
+<!-- STATS STRIP -->
+<div class="stats-strip">
+  <div class="stats-inner">
+    <div class="stat-item">
+      <div class="stat-num count-up" data-bind-target="yardsServed" data-target="0" data-suffix="+">0</div>
+      <div class="stat-label">Happy Homeowners</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num count-up" data-bind-target="yearsExperience" data-target="0" data-suffix=" yrs">0</div>
+      <div class="stat-label">Years of Experience</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num count-up" data-target="98" data-suffix="%">0</div>
+      <div class="stat-label">Satisfaction Rate</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num count-up" data-target="32" data-suffix="">0</div>
+      <div class="stat-label">Cities Served</div>
+    </div>
+  </div>
+</div>
+
+<!-- OUR SERVICES PREVIEW -->
+<div class="bg-pale">
+  <div class="section">
+    <div class="centered">
+      <span class="section-tag">What We Do</span>
+      <h2 class="section-heading">Everything your lawn needs</h2>
+      <p class="section-sub">From a quick weekly mow to a full seasonal overhaul — we've got you covered all year round.</p>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-icon">✂️</div>
+        <h3>Mow & Edge</h3>
+        <p>Crisp lines and an even cut every time, leaving your lawn looking sharp and tidy.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🌱</div>
+        <h3>Fertilise & Feed</h3>
+        <p>Customized nutrient programs that keep your grass thick, green, and resilient.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🍂</div>
+        <h3>Leaf Cleanup</h3>
+        <p>Autumn leaf removal so your yard stays clean and healthy through the cooler months.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🌿</div>
+        <h3>Hedge & Shrub</h3>
+        <p>Precision shaping of hedges, bushes, and borders to frame your home beautifully.</p>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:38px">
+      <a href="services.html" class="btn btn-green">See All Services & Pricing</a>
+    </div>
+  </div>
+</div>
+
+<!-- TESTIMONIAL SNIPPET -->
+<div class="section centered">
+  <span class="section-tag">Neighbors Love Us</span>
+  <h2 class="section-heading">What our customers say</h2>
+  <div class="reviews-grid" style="max-width:900px;margin:0 auto">
+    <div class="review-card">
+      <div class="stars">★★★★★</div>
+      <p class="review-text">"<span data-bind="name">GreenCut</span> completely transformed my front yard. They're always on time and the results are stunning every single week!"</p>
+      <div class="reviewer">
+        <div class="reviewer-avatar">👩</div>
+        <div class="reviewer-info"><div class="name">Margaret O'Brien</div><div class="location">📍 Austin, TX</div></div>
+      </div>
+    </div>
+    <div class="review-card">
+      <div class="stars">★★★★★</div>
+      <p class="review-text">"The Full Yard Overhaul was a game changer. From weeds to gorgeous green carpet in just one visit. Absolutely amazing!"</p>
+      <div class="reviewer">
+        <div class="reviewer-avatar">👨</div>
+        <div class="reviewer-info"><div class="name">James Kowalski</div><div class="location">📍 Columbus, OH</div></div>
+      </div>
+    </div>
+    <div class="review-card">
+      <div class="stars">★★★★★</div>
+      <p class="review-text">"Friendly staff, great communication, and the results speak for themselves. My kids actually love playing in the yard now!"</p>
+      <div class="reviewer">
+        <div class="reviewer-avatar">👩</div>
+        <div class="reviewer-info"><div class="name">Priya Nair</div><div class="location">📍 Phoenix, AZ</div></div>
+      </div>
+    </div>
+  </div>
+  <a href="reviews.html" class="btn btn-green" style="margin-top:36px">Read All Reviews</a>
+</div>
+
+<!-- CTA BANNER -->
+<div style="background:linear-gradient(135deg,var(--green-dark),var(--green-main));color:#fff;padding:64px 28px;text-align:center">
+  <h2 style="font-size:clamp(1.6rem,3.5vw,2.5rem);margin-bottom:14px">Ready for a greener yard?</h2>
+  <p style="opacity:.85;font-size:1.05rem;margin-bottom:30px">Book your first service today and get a free lawn health assessment with every visit.</p>
+  <a href="booking.html" class="btn btn-primary" style="font-size:1.05rem;padding:15px 38px">📅 Book My Service</a>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="logo">🌿 <span data-bind="name">GreenCut</span></div>
+      <p>Professional lawn care for <span data-bind="city">your area</span> and surrounding areas. Locally owned, community-driven, and always green.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Pages</h4>
+      <a href="index.html">Home</a>
+      <a href="services.html">Services</a>
+      <a href="reviews.html">Reviews</a>
+      <a href="booking.html">Book Now</a>
+    </div>
+    <div class="footer-col">
+      <h4>Services</h4>
+      <a href="services.html">Mow & Edge</a>
+      <a href="services.html">Full Overhaul</a>
+      <a href="services.html">Leaf Cleanup</a>
+      <a href="services.html">Hedge Trim</a>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <a data-bind="phone" data-bind-prefix="📞 " data-bind-attr="href-tel:phone">📞 (800) 473-6288</a>
+      <a data-bind="email" data-bind-prefix="✉️ " data-bind-attr="href-mailto:email">✉️ hello@greencut.com</a>
+      <a data-bind="city" data-bind-prefix="📍 ">📍 Nationwide, USA</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 <span data-bind="name">GreenCut</span>. All rights reserved.</span>
+    <span>Made with 💚 for <span data-bind="city">greener neighborhoods</span></span>
+  </div>
+</footer>
+
+<script src="js/api.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

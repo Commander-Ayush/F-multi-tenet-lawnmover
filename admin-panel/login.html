@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Admin Login</title>
+    <link rel="stylesheet" href="style.css"/>
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+            background: var(--green-pale);
+        }
+        .login-box {
+            background: var(--white); border-radius: var(--radius);
+            padding: 44px 40px;
+            box-shadow: var(--shadow-lg);
+            width: 100%; max-width: 380px;
+        }
+        .login-header { text-align: center; margin-bottom: 30px; }
+        .login-icon {
+            width: 56px; height: 56px; border-radius: 16px;
+            background: var(--green-dark);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 26px; margin: 0 auto 16px;
+        }
+        .login-business {
+            font-size: .78rem; font-weight: 700; letter-spacing: .08em;
+            text-transform: uppercase; color: var(--text-light); margin-bottom: 4px;
+        }
+        .login-header h1 {
+            font-size: 1.45rem; font-weight: 800;
+            color: var(--green-dark); margin: 0;
+        }
+        .form-group { margin-bottom: 16px; }
+        .form-group label {
+            display: block; font-size: .88rem; font-weight: 700;
+            color: var(--text-dark); margin-bottom: 6px;
+        }
+        .input-wrap { position: relative; display: flex; align-items: center; }
+        .input-wrap .input-icon { position: absolute; left: 13px; font-size: 16px; pointer-events: none; }
+        .input-wrap input {
+            width: 100%; padding: 11px 40px 11px 38px;
+            border: 2px solid #dcedc8; border-radius: var(--radius-sm);
+            font-family: 'Nunito', sans-serif; font-size: .95rem;
+            color: var(--text-dark); background: var(--cream);
+            outline: none; transition: border-color var(--transition);
+            box-sizing: border-box;
+        }
+        .input-wrap input:focus { border-color: var(--green-main); background: var(--white); }
+        .toggle-eye { position: absolute; right: 13px; cursor: pointer; font-size: 16px; user-select: none; line-height: 1; }
+        .error-msg {
+            background: #fce4ec; color: #c62828;
+            font-size: .85rem; padding: 10px 14px;
+            border-radius: var(--radius-sm); margin-bottom: 16px;
+            display: none; align-items: center; gap: 8px;
+        }
+        .btn-login {
+            width: 100%; background: var(--green-dark); color: var(--white);
+            border: none; cursor: pointer; padding: 13px;
+            border-radius: 40px; font-family: 'Nunito', sans-serif;
+            font-size: 1rem; font-weight: 700; margin-top: 6px;
+            transition: background var(--transition), transform .15s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-login:hover { background: var(--green-main); transform: translateY(-1px); }
+        .btn-login:disabled { opacity: .7; cursor: default; transform: none; }
+        .login-footer { text-align: center; font-size: .8rem; color: var(--text-light); margin-top: 22px; }
+    </style>
+</head>
+<body>
+<div class="login-box">
+    <div class="login-header">
+        <div class="login-icon">🌿</div>
+        <p class="login-business">Admin Panel</p>
+        <h1>Sign in to manage your business</h1>
+    </div>
+
+    <div class="error-msg"></div>
+
+    <form id="login-form">
+        <div class="form-group">
+            <label for="username">Email</label>
+            <div class="input-wrap">
+                <span class="input-icon">👤</span>
+                <input type="email" id="username" name="email" placeholder="you@yourbusiness.com" autofocus required/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <div class="input-wrap">
+                <span class="input-icon">🔒</span>
+                <input type="password" id="password" name="password" placeholder="••••••••" required/>
+                <span class="toggle-eye" onclick="togglePassword()" id="eyeIcon">👁️</span>
+            </div>
+        </div>
+        <button type="submit" class="btn-login">Sign in →</button>
+    </form>
+
+    <p class="login-footer">🛡️ One login, scoped to your business only</p>
+</div>
+
+<script src="js/admin-api.js"></script>
+<script src="js/admin-ui.js"></script>
+</body>
+</html>

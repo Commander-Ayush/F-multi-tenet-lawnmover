@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{companyName} — Customer Reviews</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    /* ── Review form styles ── */
+    .review-form-section {
+      background: var(--green-pale);
+      padding: 64px 28px;
+    }
+    .review-form-box {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 36px 32px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .review-form-box h2 {
+      font-size: 1.5rem;
+      color: var(--green-dark);
+      margin-bottom: 6px;
+    }
+    .review-form-box p {
+      color: var(--text-light);
+      margin-bottom: 24px;
+      font-size: .95rem;
+    }
+    .star-picker {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 20px;
+    }
+    .star-btn {
+      font-size: 2rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #ccc;
+      transition: color .15s, transform .1s;
+      line-height: 1;
+      padding: 0;
+    }
+    .star-btn.selected,
+    .star-btn:hover { color: #f9a825; transform: scale(1.15); }
+    .review-success {
+      display: none;
+      text-align: center;
+      padding: 28px 0;
+    }
+    .review-success .big-check { font-size: 3rem; }
+    .review-success h3 { color: var(--green-dark); margin: 10px 0 8px; }
+    .review-success p { color: var(--text-light); }
+  </style>
+</head>
+<body>
+
+<div id="gc-toast" class="toast"></div>
+
+<div id="sidebar-mower">
+  <img src="lawnmover.png" alt="Lawn Mower">
+  <div id="mower-trail"></div>
+</div>
+
+<nav id="navbar">
+  <div class="nav-inner">
+    <a class="nav-logo" href="index.html"><span class="logo-leaf">🌿</span> <span data-bind="name">GreenCut</span></a>
+    <button class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="services.html">Services & Pricing</a></li>
+      <li><a href="reviews.html">Reviews</a></li>
+      <li><a href="booking.html" class="nav-cta">Book Now</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="page-header">
+  <h1>⭐ Customer Reviews</h1>
+  <p>Don't take our word for it — here's what real homeowners say.</p>
+</div>
+
+<!-- RATING SUMMARY — values updated live by renderReviews() -->
+<div style="background:var(--green-pale);padding:48px 28px">
+  <div style="max-width:900px;margin:0 auto;display:grid;grid-template-columns:auto 1fr;gap:48px;align-items:center">
+    <div style="text-align:center">
+      <div id="avg-rating" style="font-family:'Playfair Display',serif;font-size:5rem;font-weight:800;color:var(--green-dark);line-height:1">—</div>
+      <div style="color:#f9a825;font-size:1.5rem;margin:6px 0">★★★★★</div>
+      <div id="review-count" style="color:var(--text-light);font-size:.9rem">Loading reviews…</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:9px">
+      <!-- bar-N and pct-N ids are updated live by renderReviews() -->
+      <div style="display:flex;align-items:center;gap:12px">
+        <span style="font-size:.85rem;color:var(--text-light);width:30px">5 ★</span>
+        <div style="flex:1;height:10px;background:#dcedc8;border-radius:5px;overflow:hidden"><div id="bar-5" style="width:0%;height:100%;background:var(--green-main);border-radius:5px;transition:width .6s ease"></div></div>
+        <span id="pct-5" style="font-size:.85rem;color:var(--text-light);width:34px">0%</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <span style="font-size:.85rem;color:var(--text-light);width:30px">4 ★</span>
+        <div style="flex:1;height:10px;background:#dcedc8;border-radius:5px;overflow:hidden"><div id="bar-4" style="width:0%;height:100%;background:#8bc34a;border-radius:5px;transition:width .6s ease"></div></div>
+        <span id="pct-4" style="font-size:.85rem;color:var(--text-light);width:34px">0%</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <span style="font-size:.85rem;color:var(--text-light);width:30px">3 ★</span>
+        <div style="flex:1;height:10px;background:#dcedc8;border-radius:5px;overflow:hidden"><div id="bar-3" style="width:0%;height:100%;background:#cddc39;border-radius:5px;transition:width .6s ease"></div></div>
+        <span id="pct-3" style="font-size:.85rem;color:var(--text-light);width:34px">0%</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <span style="font-size:.85rem;color:var(--text-light);width:30px">2 ★</span>
+        <div style="flex:1;height:10px;background:#dcedc8;border-radius:5px;overflow:hidden"><div id="bar-2" style="width:0%;height:100%;background:#ffc107;border-radius:5px;transition:width .6s ease"></div></div>
+        <span id="pct-2" style="font-size:.85rem;color:var(--text-light);width:34px">0%</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <span style="font-size:.85rem;color:var(--text-light);width:30px">1 ★</span>
+        <div style="flex:1;height:10px;background:#dcedc8;border-radius:5px;overflow:hidden"><div id="bar-1" style="width:0%;height:100%;background:#ff7043;border-radius:5px;transition:width .6s ease"></div></div>
+        <span id="pct-1" style="font-size:.85rem;color:var(--text-light);width:34px">0%</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- REVIEWS GRID — rendered live by main.js renderReviews() -->
+<div class="section">
+  <div class="centered" style="margin-bottom:40px">
+    <span class="section-tag">From Real Customers</span>
+    <h2 class="section-heading">What the neighborhood is saying</h2>
+  </div>
+  <div class="reviews-grid" id="reviews-grid">
+    <div style="color:var(--text-light);text-align:center;padding:40px;grid-column:1/-1">Loading reviews…</div>
+  </div>
+</div>
+
+<!-- LEAVE A REVIEW FORM -->
+<div class="review-form-section">
+  <div class="review-form-box">
+    <div id="review-form-wrap">
+      <h2>Leave a Review</h2>
+      <p>Enjoyed your service? Share your experience — it helps your neighbors make a great choice.</p>
+
+      <form id="review-form">
+        <input type="hidden" id="star-input" value="0"/>
+
+        <div class="form-group" style="margin-bottom:18px">
+          <label style="font-weight:700;font-size:.9rem;color:var(--text-dark);display:block;margin-bottom:8px">Your Rating <span style="color:var(--red-mower)">*</span></label>
+          <div class="star-picker">
+            <button type="button" class="star-btn" data-star="1">☆</button>
+            <button type="button" class="star-btn" data-star="2">☆</button>
+            <button type="button" class="star-btn" data-star="3">☆</button>
+            <button type="button" class="star-btn" data-star="4">☆</button>
+            <button type="button" class="star-btn" data-star="5">☆</button>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="reviewerName">Your Name <span style="color:var(--red-mower)">*</span></label>
+            <input type="text" name="reviewerName" id="reviewerName" placeholder="Jane Doe" required/>
+          </div>
+          <div class="form-group">
+            <label for="reviewerCity">City / Location</label>
+            <input type="text" name="reviewerCity" id="reviewerCity" placeholder="Austin, TX"/>
+          </div>
+          <div class="form-group full">
+            <label for="reviewText">Your Review <span style="color:var(--red-mower)">*</span></label>
+            <textarea name="text" id="reviewText" rows="4" placeholder="Tell us about your experience with the team…" required></textarea>
+          </div>
+        </div>
+
+        <div class="form-submit" style="margin-top:8px">
+          <button type="submit" class="btn btn-primary">⭐ Submit Review</button>
+        </div>
+        <p class="form-note" style="margin-top:12px">Reviews are published after a quick check by the team — usually within 24 hours.</p>
+      </form>
+    </div>
+
+    <!-- Success state shown after submission -->
+    <div id="review-success" class="review-success">
+      <div class="big-check">🎉</div>
+      <h3>Review Submitted!</h3>
+      <p>Thanks for sharing! Your review will appear on this page once the team has approved it.</p>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="logo">🌿 <span data-bind="name">GreenCut</span></div>
+      <p>Professional lawn care for <span data-bind="city">your area</span> and surrounding areas. Locally owned, community-driven, and always green.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Pages</h4>
+      <a href="index.html">Home</a>
+      <a href="services.html">Services</a>
+      <a href="reviews.html">Reviews</a>
+      <a href="booking.html">Book Now</a>
+    </div>
+    <div class="footer-col">
+      <h4>Services</h4>
+      <a href="services.html">Mow & Edge</a>
+      <a href="services.html">Full Overhaul</a>
+      <a href="services.html">Leaf Cleanup</a>
+      <a href="services.html">Hedge Trim</a>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <a data-bind="phone" data-bind-prefix="📞 " data-bind-attr="href-tel:phone">📞 (800) 473-6288</a>
+      <a data-bind="email" data-bind-prefix="✉️ " data-bind-attr="href-mailto:email">✉️ hello@greencut.com</a>
+      <a data-bind="city" data-bind-prefix="📍 ">📍 Nationwide, USA</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 <span data-bind="name">GreenCut</span>. All rights reserved.</span>
+    <span>Made with 💚 for <span data-bind="city">greener neighborhoods</span></span>
+  </div>
+</footer>
+
+<script src="js/api.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
