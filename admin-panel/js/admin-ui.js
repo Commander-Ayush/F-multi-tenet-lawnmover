@@ -30,7 +30,7 @@ function initLoginForm() {
       setToken(token);
       location.href = 'dashboard.html';
     } catch (err) {
-      if (errorBox) { errorBox.textContent = '⚠️ ' + err.message; errorBox.style.display = 'flex'; }
+      if (errorBox) { errorBox.textContent = err.message; errorBox.style.display = 'flex'; }
       btn.disabled = false; btn.textContent = 'Sign in →';
     }
   });
@@ -39,8 +39,13 @@ function initLoginForm() {
 function togglePassword() {
   const input = document.getElementById('password');
   const icon = document.getElementById('eyeIcon');
-  if (input.type === 'password') { input.type = 'text'; icon.textContent = '🙈'; }
-  else { input.type = 'password'; icon.textContent = '👁️'; }
+  const btn = icon.closest('button');
+  const isHidden = input.type === 'password';
+  input.type = isHidden ? 'text' : 'password';
+  icon.innerHTML = isHidden
+    ? '<path d="M3 3l18 18"/><path d="M10.6 5.2A10.6 10.6 0 0 1 12 5c7 0 10.5 7 10.5 7a13.5 13.5 0 0 1-3.15 4.15M6.5 6.6C3.6 8.4 1.5 12 1.5 12s3.5 7 10.5 7c1.6 0 3-.3 4.25-.85"/><path d="M9.5 9.9a3.2 3.2 0 0 0 4.6 4.5"/>'
+    : '<path d="M1.5 12S5 5 12 5s10.5 7 10.5 7-3.5 7-10.5 7S1.5 12 1.5 12Z"/><circle cx="12" cy="12" r="3.2"/>';
+  if (btn) btn.setAttribute('aria-pressed', isHidden ? 'true' : 'false');
 }
 
 /* =====================
@@ -168,8 +173,8 @@ function renderBookingsTable(bookings) {
       <td>${statusBadge(req.completed)}</td>
       <td style="white-space:nowrap">
         ${req.completed
-          ? `<button class="action-btn edit" onclick="handleReopen(${req.id})" title="Reopen">↺</button>`
-          : `<button class="action-btn confirm" onclick="handleComplete(${req.id})" title="Mark complete">✓</button>`}
+      ? `<button class="action-btn edit" onclick="handleReopen(${req.id})" title="Reopen">↺</button>`
+      : `<button class="action-btn confirm" onclick="handleComplete(${req.id})" title="Mark complete">✓</button>`}
         <button class="action-btn delete" onclick="handleDelete(${req.id})" title="Delete">🗑</button>
       </td>
     </tr>`).join('');
