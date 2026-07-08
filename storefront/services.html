@@ -1,159 +1,179 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{companyName} — Services & Pricing</title>
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
 
-<div id="gc-toast" class="toast"></div>
+  <div id="gc-toast" class="toast"></div>
 
-<div id="sidebar-mower">
-  <img src="lawnmover.png" alt="Lawn Mower">
-  <div id="mower-trail"></div>
-</div>
-
-<nav id="navbar">
-  <div class="nav-inner">
-    <a class="nav-logo" href="index.html"><span class="logo-leaf">🌿</span> <span data-bind="name">GreenCut</span></a>
-    <button class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
-    <ul class="nav-links">
-      <li><a href="index.html">Home</a></li>
-      <li><a href="services.html">Services & Pricing</a></li>
-      <li><a href="reviews.html">Reviews</a></li>
-      <li><a href="booking.html" class="nav-cta">Book Now</a></li>
-    </ul>
+  <div id="sidebar-mower">
+    <img src="lawnmover.png" alt="Lawn Mower">
+    <div id="mower-trail"></div>
   </div>
-</nav>
 
-<div class="page-header">
-  <h1>🌿 Services & Pricing</h1>
-  <p>Transparent pricing, no hidden fees — just great-looking lawns.</p>
-</div>
+  <nav id="navbar">
+    <div class="nav-inner">
+      <a class="nav-logo" href="index.html"><span class="logo-leaf">🌿</span> <span data-bind="name">GreenCut</span></a>
+      <button class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="services.html">Services & Pricing</a></li>
+        <li><a href="reviews.html">Reviews</a></li>
+        <li><a href="booking.html" class="nav-cta">Book Now</a></li>
+      </ul>
+    </div>
+  </nav>
 
-<!-- INDIVIDUAL SERVICES -->
-<div class="section">
-  <div class="centered">
-    <span class="section-tag">À La Carte</span>
-    <h2 class="section-heading">Pick exactly what you need</h2>
-    <p class="section-sub">Book any individual service for a one-time visit or add it to your plan. Every job backed by our 100% satisfaction guarantee.</p>
+  <div class="page-header">
+    <h1>🌿 Services & Pricing</h1>
+    <p>Transparent pricing, no hidden fees — just great-looking lawns.</p>
   </div>
-  <div class="card-grid" id="services-grid">
-    <div style="color:var(--text-light);text-align:center;padding:40px;grid-column:1/-1">Loading services…</div>
-  </div>
-</div>
 
-<div class="stripe-divider"></div>
-
-<!-- SUBSCRIPTION PLANS -->
-<div class="bg-pale" style="padding:72px 28px">
-  <div class="section" style="padding:0">
+  <!-- INDIVIDUAL SERVICES -->
+  <div class="section">
     <div class="centered">
-      <span class="section-tag">Monthly Plans</span>
-      <h2 class="section-heading">Save more with a plan</h2>
-      <p class="section-sub">Commit to a monthly plan and enjoy priority scheduling, exclusive add-ons, and the best value per visit.</p>
+      <h2 class="section-heading">Pick exactly what you need</h2>
+      <p class="section-sub">Book any individual service for a one-time visit or add it to your plan. Every job backed
+        by our 100% satisfaction guarantee.</p>
     </div>
-    <div class="pricing-grid" id="pricing-grid">
-      <div style="color:var(--text-light);text-align:center;padding:40px;grid-column:1/-1">Loading plans…</div>
-    </div>
-  </div>
-</div>
-
-<!-- ADD-ON SERVICES (hidden automatically if the business has none) -->
-<div class="section" id="addons-section">
-  <div class="centered">
-    <span class="section-tag">Extras</span>
-    <h2 class="section-heading">Add-on services</h2>
-    <p class="section-sub">Need something extra? Tack any of these onto your next visit.</p>
-  </div>
-  <div class="card-grid" id="addons-grid">
-    <div style="color:var(--text-light);text-align:center;padding:40px;grid-column:1/-1">Loading add-ons…</div>
-  </div>
-</div>
-
-<!-- FAQ -->
-<div class="section">
-  <div class="centered" style="margin-bottom:44px">
-    <span class="section-tag">Got Questions?</span>
-    <h2 class="section-heading">Frequently Asked</h2>
-  </div>
-  <div style="max-width:740px;margin:0 auto;display:flex;flex-direction:column;gap:18px">
-
-    <details style="background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 22px;cursor:pointer">
-      <summary style="font-weight:700;font-size:1rem;color:var(--text-dark);list-style:none;display:flex;justify-content:space-between;align-items:center">
-        Do I need to be home during the service? <span style="color:var(--green-main)">+</span>
-      </summary>
-      <p style="margin-top:12px;color:var(--text-light);line-height:1.7;font-size:.95rem">Nope! As long as we have access to your yard, our crew can complete the service while you're out. We'll send you a completion notification with photos when we're done.</p>
-    </details>
-
-    <details style="background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 22px;cursor:pointer">
-      <summary style="font-weight:700;font-size:1rem;color:var(--text-dark);list-style:none;display:flex;justify-content:space-between;align-items:center">
-        What if it rains on my scheduled day? <span style="color:var(--green-main)">+</span>
-      </summary>
-      <p style="margin-top:12px;color:var(--text-light);line-height:1.7;font-size:.95rem">We monitor weather closely and will reschedule to the next available dry day at no extra charge. You'll always be notified in advance.</p>
-    </details>
-
-    <details style="background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 22px;cursor:pointer">
-      <summary style="font-weight:700;font-size:1rem;color:var(--text-dark);list-style:none;display:flex;justify-content:space-between;align-items:center">
-        Can I cancel or pause my plan? <span style="color:var(--green-main)">+</span>
-      </summary>
-      <p style="margin-top:12px;color:var(--text-light);line-height:1.7;font-size:.95rem">Absolutely. All monthly plans are cancel-anytime with no penalty. Just give us 5 days notice before your next billing date.</p>
-    </details>
-
-    <details style="background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 22px;cursor:pointer">
-      <summary style="font-weight:700;font-size:1rem;color:var(--text-dark);list-style:none;display:flex;justify-content:space-between;align-items:center">
-        Do you provide equipment and supplies? <span style="color:var(--green-main)">+</span>
-      </summary>
-      <p style="margin-top:12px;color:var(--text-light);line-height:1.7;font-size:.95rem">Yes — our team brings everything needed. You don't need to supply any tools, fertilisers, or bags. We handle it all.</p>
-    </details>
-
-  </div>
-</div>
-
-<!-- BOTTOM CTA -->
-<div style="background:var(--green-dark);color:#fff;padding:56px 28px;text-align:center">
-  <h2 style="font-size:clamp(1.6rem,3vw,2.3rem);margin-bottom:12px">Not sure which plan fits?</h2>
-  <p style="opacity:.82;margin-bottom:28px">Call us at <strong data-bind="phone">(800) 473-6288</strong> and we'll match you with the perfect service — free of charge.</p>
-  <a href="booking.html" class="btn btn-primary">Book Online Now</a>
-</div>
-
-<!-- FOOTER -->
-<footer>
-  <div class="footer-inner">
-    <div class="footer-brand">
-      <div class="logo">🌿 <span data-bind="name">GreenCut</span></div>
-      <p>Professional lawn care for <span data-bind="city">your area</span> and surrounding areas. Locally owned, community-driven, and always green.</p>
-    </div>
-    <div class="footer-col">
-      <h4>Pages</h4>
-      <a href="index.html">Home</a>
-      <a href="services.html">Services</a>
-      <a href="reviews.html">Reviews</a>
-      <a href="booking.html">Book Now</a>
-    </div>
-    <div class="footer-col">
-      <h4>Services</h4>
-      <a href="services.html">Mow & Edge</a>
-      <a href="services.html">Full Overhaul</a>
-      <a href="services.html">Leaf Cleanup</a>
-      <a href="services.html">Hedge Trim</a>
-    </div>
-    <div class="footer-col">
-      <h4>Contact</h4>
-      <a data-bind="phone" data-bind-prefix="📞 " data-bind-attr="href-tel:phone">📞 (800) 473-6288</a>
-      <a data-bind="email" data-bind-prefix="✉️ " data-bind-attr="href-mailto:email">✉️ hello@greencut.com</a>
-      <a data-bind="city" data-bind-prefix="📍 ">📍 Nationwide, USA</a>
+    <div class="card-grid" id="services-grid">
+      <div style="color:var(--text-light);text-align:center;padding:40px;grid-column:1/-1">Loading services…</div>
     </div>
   </div>
-  <div class="footer-bottom">
-    <span>© 2025 <span data-bind="name">GreenCut</span>. All rights reserved.</span>
-    <span>Made with 💚 for <span data-bind="city">greener neighborhoods</span></span>
-  </div>
-</footer>
 
-<script src="js/api.js"></script>
-<script src="js/main.js"></script>
+  <div class="stripe-divider"></div>
+
+  <!-- SUBSCRIPTION PLANS -->
+  <div class="bg-pale" style="padding:72px 28px">
+    <div class="section" style="padding:0">
+      <div class="centered">
+        <span class="section-tag">Monthly Plans</span>
+        <h2 class="section-heading">Save more with a plan</h2>
+        <p class="section-sub">Commit to a monthly plan and enjoy priority scheduling, exclusive add-ons, and the best
+          value per visit.</p>
+      </div>
+      <div class="pricing-grid" id="pricing-grid">
+        <div style="color:var(--text-light);text-align:center;padding:40px;grid-column:1/-1">Loading plans…</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD-ON SERVICES (hidden automatically if the business has none) -->
+  <div class="section" id="addons-section">
+    <div class="centered">
+      <span class="section-tag">Extras</span>
+      <h2 class="section-heading">Add-on services</h2>
+      <p class="section-sub">Need something extra? Tack any of these onto your next visit.</p>
+    </div>
+    <div class="card-grid" id="addons-grid">
+      <div style="color:var(--text-light);text-align:center;padding:40px;grid-column:1/-1">Loading add-ons…</div>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="section">
+    <div class="centered" style="margin-bottom:44px">
+      <span class="section-tag">Got Questions?</span>
+      <h2 class="section-heading">Frequently Asked</h2>
+    </div>
+    <div style="max-width:740px;margin:0 auto;display:flex;flex-direction:column;gap:18px">
+
+      <details
+        style="background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 22px;cursor:pointer">
+        <summary
+          style="font-weight:700;font-size:1rem;color:var(--text-dark);list-style:none;display:flex;justify-content:space-between;align-items:center">
+          Do I need to be home during the service? <span style="color:var(--green-main)">+</span>
+        </summary>
+        <p style="margin-top:12px;color:var(--text-light);line-height:1.7;font-size:.95rem">Nope! As long as we have
+          access to your yard, our crew can complete the service while you're out. We'll send you a completion
+          notification with photos when we're done.</p>
+      </details>
+
+      <details
+        style="background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 22px;cursor:pointer">
+        <summary
+          style="font-weight:700;font-size:1rem;color:var(--text-dark);list-style:none;display:flex;justify-content:space-between;align-items:center">
+          What if it rains on my scheduled day? <span style="color:var(--green-main)">+</span>
+        </summary>
+        <p style="margin-top:12px;color:var(--text-light);line-height:1.7;font-size:.95rem">We monitor weather closely
+          and will reschedule to the next available dry day at no extra charge. You'll always be notified in advance.
+        </p>
+      </details>
+
+      <details
+        style="background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 22px;cursor:pointer">
+        <summary
+          style="font-weight:700;font-size:1rem;color:var(--text-dark);list-style:none;display:flex;justify-content:space-between;align-items:center">
+          Can I cancel or pause my plan? <span style="color:var(--green-main)">+</span>
+        </summary>
+        <p style="margin-top:12px;color:var(--text-light);line-height:1.7;font-size:.95rem">Absolutely. All monthly
+          plans are cancel-anytime with no penalty. Just give us 5 days notice before your next billing date.</p>
+      </details>
+
+      <details
+        style="background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 22px;cursor:pointer">
+        <summary
+          style="font-weight:700;font-size:1rem;color:var(--text-dark);list-style:none;display:flex;justify-content:space-between;align-items:center">
+          Do you provide equipment and supplies? <span style="color:var(--green-main)">+</span>
+        </summary>
+        <p style="margin-top:12px;color:var(--text-light);line-height:1.7;font-size:.95rem">Yes — our team brings
+          everything needed. You don't need to supply any tools, fertilisers, or bags. We handle it all.</p>
+      </details>
+
+    </div>
+  </div>
+
+  <!-- BOTTOM CTA -->
+  <div style="background:var(--green-dark);color:#fff;padding:56px 28px;text-align:center">
+    <h2 style="font-size:clamp(1.6rem,3vw,2.3rem);margin-bottom:12px">Not sure which plan fits?</h2>
+    <p style="opacity:.82;margin-bottom:28px">Call us at <strong data-bind="phone">(800) 473-6288</strong> and we'll
+      match you with the perfect service — free of charge.</p>
+    <a href="booking.html" class="btn btn-primary">Book Online Now</a>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="logo">🌿 <span data-bind="name">GreenCut</span></div>
+        <p>Professional lawn care for <span data-bind="city">your area</span> and surrounding areas. Locally owned,
+          community-driven, and always green.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Pages</h4>
+        <a href="index.html">Home</a>
+        <a href="services.html">Services</a>
+        <a href="reviews.html">Reviews</a>
+        <a href="booking.html">Book Now</a>
+      </div>
+      <div class="footer-col">
+        <h4>Services</h4>
+        <a href="services.html">Mow & Edge</a>
+        <a href="services.html">Full Overhaul</a>
+        <a href="services.html">Leaf Cleanup</a>
+        <a href="services.html">Hedge Trim</a>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <a data-bind="phone" data-bind-prefix="📞 " data-bind-attr="href-tel:phone">📞 (800) 473-6288</a>
+        <a data-bind="email" data-bind-prefix="✉️ " data-bind-attr="href-mailto:email">✉️ hello@greencut.com</a>
+        <a data-bind="city" data-bind-prefix="📍 ">📍 Nationwide, USA</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 <span data-bind="name">GreenCut</span>. All rights reserved.</span>
+      <span>Made with 💚 for <span data-bind="city">greener neighborhoods</span></span>
+    </div>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
 </body>
+
 </html>

@@ -1,203 +1,222 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{companyName} — Book a Service</title>
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
 
-<div id="gc-toast" class="toast"></div>
+  <div id="gc-toast" class="toast"></div>
 
-<div id="sidebar-mower">
-  <img src="lawnmover.png" alt="Lawn Mower">
-  <div id="mower-trail"></div>
-</div>
-
-<nav id="navbar">
-  <div class="nav-inner">
-    <a class="nav-logo" href="index.html"><span class="logo-leaf">🌿</span> <span data-bind="name">GreenCut</span></a>
-    <button class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
-    <ul class="nav-links">
-      <li><a href="index.html">Home</a></li>
-      <li><a href="services.html">Services & Pricing</a></li>
-      <li><a href="reviews.html">Reviews</a></li>
-      <li><a href="booking.html" class="nav-cta">Book Now</a></li>
-    </ul>
+  <div id="sidebar-mower">
+    <img src="lawnmover.png" alt="Lawn Mower">
+    <div id="mower-trail"></div>
   </div>
-</nav>
 
-<div class="page-header">
-  <h1>📅 Book a Service</h1>
-  <p>Fill in your details and we'll confirm your appointment within 24 hours.</p>
-</div>
+  <nav id="navbar">
+    <div class="nav-inner">
+      <a class="nav-logo" href="index.html"><span class="logo-leaf">🌿</span> <span data-bind="name">GreenCut</span></a>
+      <button class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="services.html">Services & Pricing</a></li>
+        <li><a href="reviews.html">Reviews</a></li>
+        <li><a href="booking.html" class="nav-cta">Book Now</a></li>
+      </ul>
+    </div>
+  </nav>
 
-<!-- TRUST STRIP -->
-<div style="background:var(--green-pale);padding:20px 28px">
-  <div style="max-width:900px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:center;gap:28px;text-align:center">
-    <div style="display:flex;align-items:center;gap:8px;font-size:.9rem;font-weight:600;color:var(--green-dark)">
-      <span style="font-size:1.3rem">🛡️</span> 100% Satisfaction Guarantee
-    </div>
-    <div style="display:flex;align-items:center;gap:8px;font-size:.9rem;font-weight:600;color:var(--green-dark)">
-      <span style="font-size:1.3rem">📲</span> Confirmation Within 24 Hours
-    </div>
-    <div style="display:flex;align-items:center;gap:8px;font-size:.9rem;font-weight:600;color:var(--green-dark)">
-      <span style="font-size:1.3rem">🔒</span> Your Data is Safe With Us
-    </div>
-    <div style="display:flex;align-items:center;gap:8px;font-size:.9rem;font-weight:600;color:var(--green-dark)">
-      <span style="font-size:1.3rem">✅</span> No Upfront Payment Required
+  <div class="page-header">
+    <h1>Book a Service</h1>
+    <p>Fill in your details and we'll confirm your appointment within 24 hours.</p>
+  </div>
+
+  <!-- TRUST STRIP -->
+  <div style="background:var(--green-pale);padding:20px 28px">
+    <div
+      style="max-width:900px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:center;gap:28px;text-align:center">
+      <div style="display:flex;align-items:center;gap:8px;font-size:.9rem;font-weight:600;color:var(--green-dark)">
+        <span style="font-size:1.3rem">🛡️</span> 100% Satisfaction Guarantee
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;font-size:.9rem;font-weight:600;color:var(--green-dark)">
+        <span style="font-size:1.3rem">📲</span> Confirmation Within 24 Hours
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;font-size:.9rem;font-weight:600;color:var(--green-dark)">
+        <span style="font-size:1.3rem">🔒</span> Your Data is Safe With Us
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;font-size:.9rem;font-weight:600;color:var(--green-dark)">
+        <span style="font-size:1.3rem">✅</span> No Upfront Payment Required
+      </div>
     </div>
   </div>
-</div>
 
-<!-- BOOKING FORM -->
-<div class="form-section-bg">
-  <div class="form-container">
+  <!-- BOOKING FORM -->
+  <div class="form-section-bg">
+    <div class="form-container">
 
-    <div id="form-wrap">
-      <div class="form-card">
-        <div style="text-align:center;margin-bottom:28px">
-          <span class="section-tag">Step 1 of 1</span>
-          <h2 class="section-heading" style="margin-top:8px">Your Booking Details</h2>
-          <p style="color:var(--text-light);font-size:.95rem;margin-top:6px">All fields marked <span style="color:var(--red-mower)">*</span> are required.</p>
+      <div id="form-wrap">
+        <div class="form-card">
+          <div style="text-align:center;margin-bottom:28px">
+            <span class="section-tag">Step 1 of 1</span>
+            <h2 class="section-heading" style="margin-top:8px">Your Booking Details</h2>
+            <p style="color:var(--text-light);font-size:.95rem;margin-top:6px">All fields marked <span
+                style="color:var(--red-mower)">*</span> are required.</p>
+          </div>
+
+          <form id="booking-form">
+
+            <div class="form-grid">
+
+              <div class="form-group">
+                <label for="firstName">First Name <span style="color:var(--red-mower)">*</span></label>
+                <input type="text" id="firstName" name="firstName" placeholder="Jane" required>
+              </div>
+
+              <div class="form-group">
+                <label for="lastName">Last Name <span style="color:var(--red-mower)">*</span></label>
+                <input type="text" id="lastName" name="lastName" placeholder="Doe" required>
+              </div>
+
+              <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="jane@email.com">
+              </div>
+
+              <div class="form-group">
+                <label for="phone">Phone Number <span style="color:var(--red-mower)">*</span></label>
+                <input type="tel" id="phone" name="phone" placeholder="(555) 000-0000" required>
+              </div>
+
+              <div class="form-group full">
+                <label for="address">Service Address <span style="color:var(--red-mower)">*</span></label>
+                <input type="text" id="address" name="address" placeholder="123 Main St, Springfield, IL 62701"
+                  required>
+              </div>
+
+              <div class="form-group">
+                <label for="svc-select">Select Service <span style="color:var(--red-mower)">*</span></label>
+                <select id="svc-select" name="service" required>
+                  <option value="" disabled selected>Loading services…</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="pref_date">Preferred Service Date</label>
+                <input type="date" id="pref_date" name="pref_date">
+              </div>
+
+              <div class="form-group full">
+                <label for="notes">Additional Notes</label>
+                <textarea id="notes" name="notes" rows="4"
+                  placeholder="Any special instructions, gate codes, or things we should know about your yard…"></textarea>
+              </div>
+
+            </div>
+
+            <div class="form-submit">
+              <button type="submit" class="btn btn-primary" style="font-size:1.05rem;padding:14px 42px">
+                🌿 Submit My Booking
+              </button>
+            </div>
+            <p class="form-note">By submitting, you agree to be contacted by <span data-bind="name">GreenCut</span> to
+              confirm your appointment. We never share your information.</p>
+          </form>
         </div>
+      </div>
 
-        <form id="booking-form">
+      <!-- SUCCESS STATE -->
+      <div id="success-msg" class="success-msg">
+        <div class="big-check">🎉</div>
+        <h2 style="color:var(--green-dark);margin-top:10px">Booking Submitted!</h2>
+        <p>Thank you! We've received your request and will confirm your appointment via email within 24 hours.</p>
+        <div style="margin-top:24px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+          <a href="index.html" class="btn btn-green">Back to Home</a>
+          <a href="services.html" class="btn btn-outline"
+            style="color:var(--green-dark);border-color:var(--green-main)">View All Services</a>
+        </div>
+      </div>
 
-          <div class="form-grid">
+    </div>
+  </div>
 
-            <div class="form-group">
-              <label for="firstName">First Name <span style="color:var(--red-mower)">*</span></label>
-              <input type="text" id="firstName" name="firstName" placeholder="Jane" required>
-            </div>
-
-            <div class="form-group">
-              <label for="lastName">Last Name <span style="color:var(--red-mower)">*</span></label>
-              <input type="text" id="lastName" name="lastName" placeholder="Doe" required>
-            </div>
-
-            <div class="form-group">
-              <label for="email">Email Address</label>
-              <input type="email" id="email" name="email" placeholder="jane@email.com">
-            </div>
-
-            <div class="form-group">
-              <label for="phone">Phone Number <span style="color:var(--red-mower)">*</span></label>
-              <input type="tel" id="phone" name="phone" placeholder="(555) 000-0000" required>
-            </div>
-
-            <div class="form-group full">
-              <label for="address">Service Address <span style="color:var(--red-mower)">*</span></label>
-              <input type="text" id="address" name="address" placeholder="123 Main St, Springfield, IL 62701" required>
-            </div>
-
-            <div class="form-group">
-              <label for="svc-select">Select Service <span style="color:var(--red-mower)">*</span></label>
-              <select id="svc-select" name="service" required>
-                <option value="" disabled selected>Loading services…</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label for="pref_date">Preferred Service Date</label>
-              <input type="date" id="pref_date" name="pref_date">
-            </div>
-
-            <div class="form-group full">
-              <label for="notes">Additional Notes</label>
-              <textarea id="notes" name="notes" rows="4" placeholder="Any special instructions, gate codes, or things we should know about your yard…"></textarea>
-            </div>
-
-          </div>
-
-          <div class="form-submit">
-            <button type="submit" class="btn btn-primary" style="font-size:1.05rem;padding:14px 42px">
-              🌿 Submit My Booking
-            </button>
-          </div>
-          <p class="form-note">By submitting, you agree to be contacted by <span data-bind="name">GreenCut</span> to confirm your appointment. We never share your information.</p>
-        </form>
+  <!-- WHAT HAPPENS NEXT -->
+  <div class="section centered">
+    <span class="section-tag">The Process</span>
+    <h2 class="section-heading">What happens after you book</h2>
+    <div
+      style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px;margin-top:44px;max-width:900px;margin-left:auto;margin-right:auto">
+      <div
+        style="background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:28px 22px;text-align:center">
+        <div style="font-size:2.2rem;margin-bottom:12px">📨</div>
+        <h3 style="font-size:1.05rem;margin-bottom:8px">1. Confirmation Email</h3>
+        <p style="color:var(--text-light);font-size:.9rem">You'll get an email confirmation within 24 hours with your
+          scheduled time.</p>
+      </div>
+      <div
+        style="background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:28px 22px;text-align:center">
+        <div style="font-size:2.2rem;margin-bottom:12px">📞</div>
+        <h3 style="font-size:1.05rem;margin-bottom:8px">2. Day-Before Call</h3>
+        <p style="color:var(--text-light);font-size:.9rem">Our team will call or text the day before to confirm your
+          appointment is still on.</p>
+      </div>
+      <div
+        style="background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:28px 22px;text-align:center">
+        <div style="font-size:2.2rem;margin-bottom:12px">🚛</div>
+        <h3 style="font-size:1.05rem;margin-bottom:8px">3. Crew Arrives</h3>
+        <p style="color:var(--text-light);font-size:.9rem">Your crew shows up in the agreed window, fully equipped and
+          ready to work.</p>
+      </div>
+      <div
+        style="background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:28px 22px;text-align:center">
+        <div style="font-size:2.2rem;margin-bottom:12px">✅</div>
+        <h3 style="font-size:1.05rem;margin-bottom:8px">4. Done & Notified</h3>
+        <p style="color:var(--text-light);font-size:.9rem">Once complete, you'll receive a photo summary. Enjoy your
+          freshly cut lawn!</p>
       </div>
     </div>
+  </div>
 
-    <!-- SUCCESS STATE -->
-    <div id="success-msg" class="success-msg">
-      <div class="big-check">🎉</div>
-      <h2 style="color:var(--green-dark);margin-top:10px">Booking Submitted!</h2>
-      <p>Thank you! We've received your request and will confirm your appointment via email within 24 hours.</p>
-      <div style="margin-top:24px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
-        <a href="index.html" class="btn btn-green">Back to Home</a>
-        <a href="services.html" class="btn btn-outline" style="color:var(--green-dark);border-color:var(--green-main)">View All Services</a>
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="logo">🌿 <span data-bind="name">GreenCut</span></div>
+        <p>Professional lawn care for <span data-bind="city">your area</span> and surrounding areas. Locally owned,
+          community-driven, and always green.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Pages</h4>
+        <a href="index.html">Home</a>
+        <a href="services.html">Services</a>
+        <a href="reviews.html">Reviews</a>
+        <a href="booking.html">Book Now</a>
+      </div>
+      <div class="footer-col">
+        <h4>Services</h4>
+        <a href="services.html">Mow & Edge</a>
+        <a href="services.html">Full Overhaul</a>
+        <a href="services.html">Leaf Cleanup</a>
+        <a href="services.html">Hedge Trim</a>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <a data-bind="phone" data-bind-prefix="📞 " data-bind-attr="href-tel:phone">📞 (800) 473-6288</a>
+        <a data-bind="email" data-bind-prefix="✉️ " data-bind-attr="href-mailto:email">✉️ hello@greencut.com</a>
+        <a data-bind="city" data-bind-prefix="📍 ">📍 Nationwide, USA</a>
       </div>
     </div>
+    <div class="footer-bottom">
+      <span>© 2025 <span data-bind="name">GreenCut</span>. All rights reserved.</span>
+      <span>Made with 💚 for <span data-bind="city">greener neighborhoods</span></span>
+    </div>
+  </footer>
 
-  </div>
-</div>
-
-<!-- WHAT HAPPENS NEXT -->
-<div class="section centered">
-  <span class="section-tag">The Process</span>
-  <h2 class="section-heading">What happens after you book</h2>
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px;margin-top:44px;max-width:900px;margin-left:auto;margin-right:auto">
-    <div style="background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:28px 22px;text-align:center">
-      <div style="font-size:2.2rem;margin-bottom:12px">📨</div>
-      <h3 style="font-size:1.05rem;margin-bottom:8px">1. Confirmation Email</h3>
-      <p style="color:var(--text-light);font-size:.9rem">You'll get an email confirmation within 24 hours with your scheduled time.</p>
-    </div>
-    <div style="background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:28px 22px;text-align:center">
-      <div style="font-size:2.2rem;margin-bottom:12px">📞</div>
-      <h3 style="font-size:1.05rem;margin-bottom:8px">2. Day-Before Call</h3>
-      <p style="color:var(--text-light);font-size:.9rem">Our team will call or text the day before to confirm your appointment is still on.</p>
-    </div>
-    <div style="background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:28px 22px;text-align:center">
-      <div style="font-size:2.2rem;margin-bottom:12px">🚛</div>
-      <h3 style="font-size:1.05rem;margin-bottom:8px">3. Crew Arrives</h3>
-      <p style="color:var(--text-light);font-size:.9rem">Your crew shows up in the agreed window, fully equipped and ready to work.</p>
-    </div>
-    <div style="background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:28px 22px;text-align:center">
-      <div style="font-size:2.2rem;margin-bottom:12px">✅</div>
-      <h3 style="font-size:1.05rem;margin-bottom:8px">4. Done & Notified</h3>
-      <p style="color:var(--text-light);font-size:.9rem">Once complete, you'll receive a photo summary. Enjoy your freshly cut lawn!</p>
-    </div>
-  </div>
-</div>
-
-<!-- FOOTER -->
-<footer>
-  <div class="footer-inner">
-    <div class="footer-brand">
-      <div class="logo">🌿 <span data-bind="name">GreenCut</span></div>
-      <p>Professional lawn care for <span data-bind="city">your area</span> and surrounding areas. Locally owned, community-driven, and always green.</p>
-    </div>
-    <div class="footer-col">
-      <h4>Pages</h4>
-      <a href="index.html">Home</a>
-      <a href="services.html">Services</a>
-      <a href="reviews.html">Reviews</a>
-      <a href="booking.html">Book Now</a>
-    </div>
-    <div class="footer-col">
-      <h4>Services</h4>
-      <a href="services.html">Mow & Edge</a>
-      <a href="services.html">Full Overhaul</a>
-      <a href="services.html">Leaf Cleanup</a>
-      <a href="services.html">Hedge Trim</a>
-    </div>
-    <div class="footer-col">
-      <h4>Contact</h4>
-      <a data-bind="phone" data-bind-prefix="📞 " data-bind-attr="href-tel:phone">📞 (800) 473-6288</a>
-      <a data-bind="email" data-bind-prefix="✉️ " data-bind-attr="href-mailto:email">✉️ hello@greencut.com</a>
-      <a data-bind="city" data-bind-prefix="📍 ">📍 Nationwide, USA</a>
-    </div>
-  </div>
-  <div class="footer-bottom">
-    <span>© 2025 <span data-bind="name">GreenCut</span>. All rights reserved.</span>
-    <span>Made with 💚 for <span data-bind="city">greener neighborhoods</span></span>
-  </div>
-</footer>
-
-<script src="js/api.js"></script>
-<script src="js/main.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
 </body>
+
 </html>
