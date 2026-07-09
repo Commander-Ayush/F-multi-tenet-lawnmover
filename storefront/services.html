@@ -19,7 +19,11 @@
 
   <nav id="navbar">
     <div class="nav-inner">
-      <a class="nav-logo" href="index.html"><span class="logo-leaf">🌿</span> <span data-bind="name">GreenCut</span></a>
+      <a class="nav-logo" href="index.html"><span class="logo-mark"><svg width="14" height="14" viewBox="0 0 24 24"
+            fill="none" stroke="#EEF3EE" stroke-width="1.8">
+            <path d="M4 20c3-6 5-9 8-9s5 3 8 9" />
+            <circle cx="12" cy="7" r="3" />
+          </svg></span> <span data-bind="name">GreenCut</span></a>
       <button class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
       <ul class="nav-links">
         <li><a href="index.html">Home</a></li>
@@ -31,7 +35,7 @@
   </nav>
 
   <div class="page-header">
-    <h1>🌿 Services & Pricing</h1>
+    <h1>Services & Pricing</h1>
     <p>Transparent pricing, no hidden fees — just great-looking lawns.</p>
   </div>
 
@@ -43,7 +47,24 @@
         by our 100% satisfaction guarantee.</p>
     </div>
     <div class="card-grid" id="services-grid">
-      <div style="color:var(--text-light);text-align:center;padding:40px;grid-column:1/-1">Loading services…</div>
+      <div class="skel-card">
+        <div class="skel-block skel-icon"></div>
+        <div class="skel-block skel-line w-60"></div>
+        <div class="skel-block skel-line w-90"></div>
+        <div class="skel-block skel-line w-40"></div>
+      </div>
+      <div class="skel-card">
+        <div class="skel-block skel-icon"></div>
+        <div class="skel-block skel-line w-60"></div>
+        <div class="skel-block skel-line w-90"></div>
+        <div class="skel-block skel-line w-40"></div>
+      </div>
+      <div class="skel-card">
+        <div class="skel-block skel-icon"></div>
+        <div class="skel-block skel-line w-60"></div>
+        <div class="skel-block skel-line w-90"></div>
+        <div class="skel-block skel-line w-40"></div>
+      </div>
     </div>
   </div>
 
@@ -59,7 +80,27 @@
           value per visit.</p>
       </div>
       <div class="pricing-grid" id="pricing-grid">
-        <div style="color:var(--text-light);text-align:center;padding:40px;grid-column:1/-1">Loading plans…</div>
+        <div class="skel-pricing">
+          <div class="skel-block skel-line title"></div>
+          <div class="skel-block skel-line price"></div>
+          <div class="skel-block skel-line feature"></div>
+          <div class="skel-block skel-line feature"></div>
+          <div class="skel-block skel-line feature"></div>
+        </div>
+        <div class="skel-pricing">
+          <div class="skel-block skel-line title"></div>
+          <div class="skel-block skel-line price"></div>
+          <div class="skel-block skel-line feature"></div>
+          <div class="skel-block skel-line feature"></div>
+          <div class="skel-block skel-line feature"></div>
+        </div>
+        <div class="skel-pricing">
+          <div class="skel-block skel-line title"></div>
+          <div class="skel-block skel-line price"></div>
+          <div class="skel-block skel-line feature"></div>
+          <div class="skel-block skel-line feature"></div>
+          <div class="skel-block skel-line feature"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -72,7 +113,24 @@
       <p class="section-sub">Need something extra? Tack any of these onto your next visit.</p>
     </div>
     <div class="card-grid" id="addons-grid">
-      <div style="color:var(--text-light);text-align:center;padding:40px;grid-column:1/-1">Loading add-ons…</div>
+      <div class="skel-card">
+        <div class="skel-block skel-icon"></div>
+        <div class="skel-block skel-line w-60"></div>
+        <div class="skel-block skel-line w-90"></div>
+        <div class="skel-block skel-line w-40"></div>
+      </div>
+      <div class="skel-card">
+        <div class="skel-block skel-icon"></div>
+        <div class="skel-block skel-line w-60"></div>
+        <div class="skel-block skel-line w-90"></div>
+        <div class="skel-block skel-line w-40"></div>
+      </div>
+      <div class="skel-card">
+        <div class="skel-block skel-icon"></div>
+        <div class="skel-block skel-line w-60"></div>
+        <div class="skel-block skel-line w-90"></div>
+        <div class="skel-block skel-line w-40"></div>
+      </div>
     </div>
   </div>
 
@@ -141,7 +199,11 @@
   <footer>
     <div class="footer-inner">
       <div class="footer-brand">
-        <div class="logo">🌿 <span data-bind="name">GreenCut</span></div>
+        <div class="logo"><span class="logo-mark"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+              stroke="#EEF3EE" stroke-width="1.8">
+              <path d="M4 20c3-6 5-9 8-9s5 3 8 9" />
+              <circle cx="12" cy="7" r="3" />
+            </svg></span> <span data-bind="name">GreenCut</span></div>
         <p>Professional lawn care for <span data-bind="city">your area</span> and surrounding areas. Locally owned,
           community-driven, and always green.</p>
       </div>
@@ -161,14 +223,26 @@
       </div>
       <div class="footer-col">
         <h4>Contact</h4>
-        <a data-bind="phone" data-bind-prefix="📞 " data-bind-attr="href-tel:phone">📞 (800) 473-6288</a>
-        <a data-bind="email" data-bind-prefix="✉️ " data-bind-attr="href-mailto:email">✉️ hello@greencut.com</a>
-        <a data-bind="city" data-bind-prefix="📍 ">📍 Nationwide, USA</a>
+        <a data-bind-attr="href-tel:phone"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path
+              d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+          </svg><span data-bind="phone">(800) 473-6288</span></a>
+        <a data-bind-attr="href-mailto:email"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="4" width="20" height="16" rx="2" />
+            <path d="m22 7-10 6L2 7" />
+          </svg><span data-bind="email">hello@greencut.com</span></a>
+        <a><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z" />
+            <circle cx="12" cy="10" r="3" />
+          </svg><span data-bind="city">Nationwide, USA</span></a>
       </div>
     </div>
     <div class="footer-bottom">
       <span>© 2025 <span data-bind="name">GreenCut</span>. All rights reserved.</span>
-      <span>Made with 💚 for <span data-bind="city">greener neighborhoods</span></span>
+      <span>Made with care for <span data-bind="city">greener neighborhoods</span></span>
     </div>
   </footer>
 

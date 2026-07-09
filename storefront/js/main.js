@@ -12,13 +12,28 @@
 */
 
 /* =====================
+   SITE CONFIG
+   Flip SHOW_NAV_MOWER to false to remove the little mower that
+   travels across the navbar as the page scrolls. The sticky mower
+   in the corner of the page is unaffected — it's controlled by the
+   #sidebar-mower element existing in the page markup, independently.
+   ===================== */
+const SHOW_NAV_MOWER = false;
+
+/* =====================
    STICKY SIDEBAR + NAVBAR MOWER ANIMATION  (unchanged, purely visual)
    ===================== */
 function initMower() {
   const sidebarEl = document.getElementById('sidebar-mower');
   const navMowerEl = document.getElementById('nav-mower');
+  const navOverlayEl = document.getElementById('nav-cut-overlay');
   const trail = document.getElementById('mower-trail');
   const docH = () => document.documentElement.scrollHeight - window.innerHeight;
+
+  if (!SHOW_NAV_MOWER) {
+    if (navMowerEl) navMowerEl.style.display = 'none';
+    if (navOverlayEl) navOverlayEl.style.display = 'none';
+  }
 
   function update() {
     const pct = docH() > 0 ? window.scrollY / docH() : 0;
@@ -28,7 +43,7 @@ function initMower() {
       sidebarEl.style.top = (minTop + pct * (maxTop - minTop)) + 'px';
       if (trail) trail.style.height = (pct * 60) + 'px';
     }
-    if (navMowerEl) {
+    if (navMowerEl && SHOW_NAV_MOWER) {
       document.documentElement.style.setProperty('--nav-mower-pct', `${(pct * 100).toFixed(2)}%`);
     }
   }
@@ -129,6 +144,58 @@ function renderCompanyInfo(company) {
 }
 
 /* =====================
+   SKELETON LOADING WIDGETS
+   Rendered immediately (before the fetch resolves) so the page never
+   shows a blank gap or a plain "Loading…" line. Swapped out for the
+   real cards the moment the data arrives.
+   ===================== */
+const DEFAULT_SERVICE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20c3-6 5-9 8-9s5 3 8 9"/><circle cx="12" cy="7" r="3.2"/></svg>';
+
+function renderCardSkeletons(containerId, count = 4) {
+  const grid = document.getElementById(containerId);
+  if (!grid) return;
+  grid.innerHTML = Array.from({ length: count }).map(() => `
+    <div class="skel-card">
+      <div class="skel-block skel-icon"></div>
+      <div class="skel-block skel-line w-60"></div>
+      <div class="skel-block skel-line w-90"></div>
+      <div class="skel-block skel-line w-40"></div>
+    </div>`).join('');
+}
+
+function renderPricingSkeletons(containerId, count = 3) {
+  const grid = document.getElementById(containerId);
+  if (!grid) return;
+  grid.innerHTML = Array.from({ length: count }).map(() => `
+    <div class="skel-pricing">
+      <div class="skel-block skel-line title"></div>
+      <div class="skel-block skel-line price"></div>
+      <div class="skel-block skel-line feature"></div>
+      <div class="skel-block skel-line feature"></div>
+      <div class="skel-block skel-line feature"></div>
+    </div>`).join('');
+}
+
+function renderReviewSkeletons(containerId, count = 3) {
+  const grid = document.getElementById(containerId);
+  if (!grid) return;
+  grid.innerHTML = Array.from({ length: count }).map(() => `
+    <div class="skel-review">
+      <div class="skel-block skel-line stars"></div>
+      <div class="skel-block skel-line text"></div>
+      <div class="skel-block skel-line text"></div>
+      <div class="skel-block skel-line text"></div>
+      <div class="skel-review-footer">
+        <div class="skel-block skel-avatar"></div>
+        <div class="skel-lines">
+          <div class="skel-block skel-line name"></div>
+          <div class="skel-block skel-line loc"></div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+/* =====================
    SERVICES / PLANS / ADD-ONS — build the cards client-side
    ===================== */
 function renderServiceCards(containerId, services) {
@@ -140,10 +207,10 @@ function renderServiceCards(containerId, services) {
   }
   grid.innerHTML = services.map(s => `
     <div class="card">
-      <div class="card-icon">${s.icon || '🌿'}</div>
+      <div class="card-icon">${s.icon || DEFAULT_SERVICE_ICON}</div>
       <h3>${escapeHtml(s.name)}</h3>
       <p>${escapeHtml(s.description || '')}</p>
-      <div style="margin-top:14px;font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--green-dark);font-weight:700;">
+      <div style="margin-top:14px;font-family:'Fraunces',serif;font-size:1.2rem;color:var(--green-dark);font-weight:600;">
         ${escapeHtml(s.price || '')}
       </div>
     </div>`).join('');
@@ -224,7 +291,7 @@ async function initBookingForm() {
       document.getElementById('form-wrap').style.display = 'none';
       const sm = document.getElementById('success-msg');
       if (sm) sm.classList.add('show');
-      showToast("🌿 Booking submitted! We'll confirm within 24 hrs.");
+      showToast("Booking submitted — we'll confirm within 24 hours.");
     } catch (err) {
       console.error(err);
       showToast("Something went wrong submitting your booking — please call us instead.", 5000);
@@ -244,7 +311,14 @@ function buildOptGroup(label, items) {
 /* =====================
    REVIEWS PAGE — live cards from the backend + submission form
    ===================== */
-const REVIEWER_AVATARS = ['👩','👨','👩','👨','👩','👨','👩','👨','👩','👨','👩','👨'];
+function getInitials(name) {
+  if (!name) return '?';
+  const parts = name.trim().split(/\s+/);
+  const initials = parts.length > 1
+    ? parts[0][0] + parts[parts.length - 1][0]
+    : parts[0].slice(0, 2);
+  return initials.toUpperCase();
+}
 
 function renderReviews(reviews) {
   const grid = document.getElementById('reviews-grid');
@@ -270,16 +344,15 @@ function renderReviews(reviews) {
     if (label) label.textContent = pct + '%';
   }
 
-  grid.innerHTML = reviews.map((r, i) => {
+  grid.innerHTML = reviews.map((r) => {
     const stars = '★'.repeat(r.stars) + '☆'.repeat(5 - r.stars);
-    const avatar = REVIEWER_AVATARS[i % REVIEWER_AVATARS.length];
-    const city = r.reviewerCity ? `📍 ${escapeHtml(r.reviewerCity)}` : '';
+    const city = r.reviewerCity ? escapeHtml(r.reviewerCity) : '';
     return `
       <div class="review-card">
         <div class="stars">${stars}</div>
-        <p class="review-text">"${escapeHtml(r.text)}"</p>
+        <p class="review-text">${escapeHtml(r.text)}</p>
         <div class="reviewer">
-          <div class="reviewer-avatar">${avatar}</div>
+          <div class="reviewer-avatar">${getInitials(r.reviewerName)}</div>
           <div class="reviewer-info">
             <div class="name">${escapeHtml(r.reviewerName)}</div>
             ${city ? `<div class="location">${city}</div>` : ''}
@@ -326,7 +399,7 @@ function initReviewForm() {
       document.getElementById('review-form-wrap').style.display = 'none';
       const sm = document.getElementById('review-success');
       if (sm) sm.style.display = 'block';
-      showToast('⭐ Review submitted! It will appear after approval.');
+      showToast('Review submitted — it will appear after approval.');
     } catch (err) {
       console.error(err);
       showToast('Something went wrong — please try again.', 5000);
@@ -358,15 +431,25 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadCompanyAndRender();
   initCounters();
 
+  if (document.getElementById('home-reviews-grid')) {
+    renderReviewSkeletons('home-reviews-grid', 3);
+    Api.getReviews()
+      .then(r => renderHomeReviews(r))
+      .catch(err => console.error('home reviews load failed', err));
+  }
+
   if (document.getElementById('services-grid')) {
+    renderCardSkeletons('services-grid', 6);
     Api.getServices().then(s => renderServiceCards('services-grid', s))
       .catch(err => console.error('services load failed', err));
   }
   if (document.getElementById('pricing-grid')) {
+    renderPricingSkeletons('pricing-grid', 3);
     Api.getPlans().then(p => renderPlanCards('pricing-grid', p))
       .catch(err => console.error('plans load failed', err));
   }
   if (document.getElementById('addons-grid')) {
+    renderCardSkeletons('addons-grid', 3);
     Api.getAddons().then(a => {
       const section = document.getElementById('addons-section');
       if (!a.length && section) { section.style.display = 'none'; return; }
@@ -375,6 +458,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   if (document.getElementById('reviews-grid')) {
+    renderReviewSkeletons('reviews-grid', 3);
     Api.getReviews().then(r => renderReviews(r))
       .catch(err => console.error('reviews load failed', err));
   }
@@ -382,3 +466,40 @@ document.addEventListener('DOMContentLoaded', async () => {
   initBookingForm();
   initReviewForm();
 });
+
+/* =====================
+   HOME PAGE REVIEW SNIPPET
+   Filters 4★ and 5★ only, max 4 cards.
+   Uses id="home-reviews-grid" so it doesn't clash with
+   the full reviews page grid (id="reviews-grid").
+   ===================== */
+function renderHomeReviews(reviews) {
+  const grid = document.getElementById('home-reviews-grid');
+  if (!grid) return;
+
+  const filtered = reviews
+    .filter(r => r.stars >= 4)
+    .slice(0, 4);
+
+  if (!filtered.length) {
+    grid.innerHTML = '<div style="color:var(--text-light);text-align:center;padding:40px;grid-column:1/-1">No reviews yet — be the first!</div>';
+    return;
+  }
+
+  grid.innerHTML = filtered.map(r => {
+    const stars = '★'.repeat(r.stars) + '☆'.repeat(5 - r.stars);
+    const city = r.reviewerCity ? escapeHtml(r.reviewerCity) : '';
+    return `
+      <div class="review-card">
+        <div class="stars">${stars}</div>
+        <p class="review-text">"${escapeHtml(r.text)}"</p>
+        <div class="reviewer">
+          <div class="reviewer-avatar">${getInitials(r.reviewerName)}</div>
+          <div class="reviewer-info">
+            <div class="name">${escapeHtml(r.reviewerName)}</div>
+            ${city ? `<div class="location">${city}</div>` : ''}
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}

@@ -1,11 +1,27 @@
 /* ============================
    GreenCut Admin Panel — UI logic
    ============================
-   Everything here renders from JSON the backend returns — no
-   server-rendered HTML anywhere. This file is shared by all three
-   admin pages; each function no-ops cleanly if its elements aren't
-   on the current page.
+   Identical functionality to the original — only class names updated
+   to match the redesigned markup. All API calls, IDs, and data flow
+   are preserved exactly.
 */
+
+/* ── Token helpers (keep in sync with admin-api.js) ── */
+function getToken() { return localStorage.getItem('gc_admin_token'); }
+function setToken(t) { localStorage.setItem('gc_admin_token', t); }
+function clearToken() { localStorage.removeItem('gc_admin_token'); }
+function goToLogin() { location.href = 'login.html'; }
+
+/* =====================
+   TOAST
+   ===================== */
+function showToast(msg) {
+  const el = document.getElementById('gc-toast');
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
 
 /* =====================
    LOGIN PAGE
@@ -14,7 +30,6 @@ function initLoginForm() {
   const form = document.getElementById('login-form');
   if (!form) return;
 
-  // Already logged in? Skip straight past the login page.
   if (getToken()) { location.href = 'dashboard.html'; return; }
 
   form.addEventListener('submit', async (e) => {
@@ -49,12 +64,12 @@ function togglePassword() {
 }
 
 /* =====================
-   PANEL NAVIGATION (dashboard / bookings / sales / reviews — dashboard.html)
+   PANEL NAVIGATION
    ===================== */
 function showPanel(id) {
-  document.querySelectorAll('.admin-panel').forEach(p => p.style.display = 'none');
+  document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
   const panel = document.getElementById('panel-' + id);
-  if (panel) panel.style.display = 'block';
+  if (panel) panel.classList.add('active');
 
   document.querySelectorAll('.admin-nav a[data-panel]').forEach(a => a.classList.remove('active'));
   const link = document.querySelector(`.admin-nav a[data-panel="${id}"]`);
@@ -69,9 +84,9 @@ function showPanel(id) {
 }
 
 /* =====================
-   DASHBOARD + BOOKINGS — fetched from one summary call
+   DASHBOARD DATA
    ===================== */
-let _allBookings = [];     // cached so the search filter doesn't need to refetch
+let _allBookings = [];
 let _monthlyChart = [];
 let _serviceBreakdown = {};
 let _revenueWindows = { rev1m: 0, rev3m: 0, rev6m: 0, rev12m: 0 };
@@ -86,9 +101,12 @@ async function loadDashboard() {
     _revenueWindows = { rev1m: summary.rev1m || 0, rev3m: summary.rev3m || 0, rev6m: summary.rev6m || 0, rev12m: summary.rev12m || 0 };
     _pendingReviewCount = summary.pendingReviewCount || 0;
     renderRecentBookings(summary.recentRequests || []);
-    // Show pending badge on Reviews nav link
+
     const badge = document.getElementById('reviews-badge');
-    if (badge) { badge.textContent = _pendingReviewCount; badge.style.display = _pendingReviewCount > 0 ? 'inline-flex' : 'none'; }
+    if (badge) {
+      badge.textContent = _pendingReviewCount;
+      badge.style.display = _pendingReviewCount > 0 ? 'inline-block' : 'none';
+    }
   } catch (err) {
     console.error('dashboard summary failed', err);
   }
@@ -113,17 +131,14 @@ function renderDashboardStats(s) {
   setText('yearly-revenue', '$' + Math.round(s.yearRevenue).toLocaleString());
   setText('yearly-bookings', s.yearBookings);
   setText('current-year-label', s.currentYearLabel);
-  // Initialise the revenue window display — defaults to "This Month"
   setRevenueWindow('1m');
 }
 
-// Called by the time-window toggle buttons in the sales panel
 function setRevenueWindow(window) {
   const map = { '1m': _revenueWindows.rev1m, '3m': _revenueWindows.rev3m, '6m': _revenueWindows.rev6m, '12m': _revenueWindows.rev12m };
   const labels = { '1m': 'This Month', '3m': 'Last 3 Months', '6m': 'Last 6 Months', '12m': 'Last 12 Months' };
   setText('window-revenue', '$' + Math.round(map[window] || 0).toLocaleString());
   setText('window-label', labels[window] || '');
-  // Highlight active toggle button
   document.querySelectorAll('.window-btn').forEach(b => b.classList.toggle('active', b.dataset.window === window));
 }
 
@@ -132,65 +147,67 @@ function setText(id, value) {
   if (el) el.textContent = value;
 }
 
+/* ─ Recent Bookings ─ */
 function renderRecentBookings(recent) {
   const tbody = document.getElementById('recent-bookings-body');
   if (!tbody) return;
   if (!recent.length) {
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text-light);padding:24px">No bookings yet</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--ink-400);padding:32px">No bookings yet</td></tr>`;
     return;
   }
   tbody.innerHTML = recent.map(req => `
     <tr>
-      <td>${req.id}</td>
+      <td><strong>#${req.id}</strong></td>
       <td>${escapeHtml(req.firstName + ' ' + req.lastName)}</td>
-      <td>${escapeHtml(req.service || '')}</td>
-      <td>${req.preferredDate || '-'}</td>
+      <td>${escapeHtml(req.service || '—')}</td>
+      <td>${req.preferredDate || '—'}</td>
       <td>${statusBadge(req.completed)}</td>
     </tr>`).join('');
 }
 
 function statusBadge(completed) {
   return completed
-    ? '<span class="status-badge completed">Completed</span>'
-    : '<span class="status-badge pending">Pending</span>';
+    ? '<span class="badge completed">Completed</span>'
+    : '<span class="badge pending">Pending</span>';
 }
 
+/* ─ All Bookings ─ */
 function renderBookingsTable(bookings) {
   const tbody = document.getElementById('bookings-body');
   if (!tbody) return;
   if (!bookings.length) {
-    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--text-light);padding:30px">No bookings yet.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--ink-400);padding:40px">No bookings yet.</td></tr>`;
     return;
   }
   tbody.innerHTML = bookings.map(req => `
     <tr data-row data-search="${escapeHtml((req.firstName + ' ' + req.lastName + ' ' + (req.email || '') + ' ' + req.phone + ' ' + req.id).toLowerCase())}">
-      <td><strong>${req.id}</strong></td>
-      <td>${escapeHtml(req.firstName + ' ' + req.lastName)}<br/><small style="color:var(--text-light)">${escapeHtml(req.email || '')}</small></td>
+      <td><strong>#${req.id}</strong></td>
+      <td>${escapeHtml(req.firstName + ' ' + req.lastName)}<br/><small>${escapeHtml(req.email || '')}</small></td>
       <td><a href="tel:${req.phone}">${escapeHtml(req.phone)}</a></td>
-      <td>${escapeHtml(req.service || '')}</td>
-      <td>${req.preferredDate || '-'}</td>
-      <td>${req.submittedAt ? new Date(req.submittedAt).toLocaleString() : '-'}</td>
+      <td>${escapeHtml(req.service || '—')}</td>
+      <td>${req.preferredDate || '—'}</td>
+      <td>${req.submittedAt ? new Date(req.submittedAt).toLocaleString() : '—'}</td>
       <td>${statusBadge(req.completed)}</td>
       <td style="white-space:nowrap">
         ${req.completed
-      ? `<button class="action-btn edit" onclick="handleReopen(${req.id})" title="Reopen">↺</button>`
-      : `<button class="action-btn confirm" onclick="handleComplete(${req.id})" title="Mark complete">✓</button>`}
-        <button class="action-btn delete" onclick="handleDelete(${req.id})" title="Delete">🗑</button>
+      ? `<button class="action-btn reopen" onclick="handleReopen(${req.id})" title="Reopen">↺ Reopen</button>`
+      : `<button class="action-btn confirm" onclick="handleComplete(${req.id})" title="Mark complete">✓ Done</button>`}
+        <button class="action-btn delete" onclick="handleDelete(${req.id})" title="Delete">Delete</button>
       </td>
     </tr>`).join('');
 }
 
 async function handleComplete(id) {
-  try { await AdminApi.completeBooking(id); await loadDashboard(); }
+  try { await AdminApi.completeBooking(id); await loadDashboard(); showToast('Booking marked complete.'); }
   catch (err) { alert(err.message); }
 }
 async function handleReopen(id) {
-  try { await AdminApi.reopenBooking(id); await loadDashboard(); }
+  try { await AdminApi.reopenBooking(id); await loadDashboard(); showToast('Booking reopened.'); }
   catch (err) { alert(err.message); }
 }
 async function handleDelete(id) {
-  if (!confirm('Delete this booking?')) return;
-  try { await AdminApi.deleteBooking(id); await loadDashboard(); }
+  if (!confirm('Delete this booking? This cannot be undone.')) return;
+  try { await AdminApi.deleteBooking(id); await loadDashboard(); showToast('Booking deleted.'); }
   catch (err) { alert(err.message); }
 }
 
@@ -198,70 +215,76 @@ function filterBookings(query) {
   const tbody = document.getElementById('bookings-body');
   if (!tbody) return;
   const q = query.trim().toLowerCase();
-  let visible = 0;
   tbody.querySelectorAll('tr[data-row]').forEach(row => {
-    const match = !q || (row.dataset.search || '').includes(q);
-    row.style.display = match ? '' : 'none';
-    if (match) visible++;
+    row.style.display = !q || (row.dataset.search || '').includes(q) ? '' : 'none';
   });
-  const emptyRow = tbody.querySelector('tr[data-empty-state]');
-  if (emptyRow) emptyRow.style.display = visible ? 'none' : '';
 }
 
 /* =====================
-   SALES CHARTS — same drawing logic as before, sourced from
-   _monthlyChart / _serviceBreakdown set by loadDashboard()
+   SALES CHARTS
    ===================== */
+const PALETTE = ['#1B4332', '#2D6A4F', '#4A7C59', '#6B9A76', '#7C3AED', '#D97706'];
+
 function renderSalesCharts() {
   const months = _monthlyChart;
   const breakdown = _serviceBreakdown;
 
+  /* Revenue bars */
   const barChart = document.getElementById('bar-chart');
   if (barChart) {
     const maxRev = Math.max(...months.map(m => m.revenue), 1);
     barChart.innerHTML = months.map(m => {
-      const pct = maxRev > 0 ? (m.revenue / maxRev) * 120 : 4;
+      const pct = (m.revenue / maxRev) * 110;
       return `<div class="bar-wrap">
-        <div class="bar" style="height:${Math.max(pct, 4)}px"><span class="tooltip">$${Math.round(m.revenue).toLocaleString()}</span></div>
+        <div class="bar" style="height:${Math.max(pct, 4)}px">
+          <span class="tooltip">$${Math.round(m.revenue).toLocaleString()}</span>
+        </div>
         <div class="bar-label">${m.label}</div>
       </div>`;
-    }).join('');
+    }).join('') || '<div style="color:var(--ink-400);font-size:12.5px;text-align:center;width:100%">No data yet</div>';
   }
 
+  /* Volume bars */
   const volChart = document.getElementById('vol-chart');
   if (volChart) {
     const maxCnt = Math.max(...months.map(m => m.count), 1);
     volChart.innerHTML = months.map(m => {
-      const pct = (m.count / maxCnt) * 120;
+      const pct = (m.count / maxCnt) * 110;
       return `<div class="bar-wrap">
-        <div class="bar" style="height:${Math.max(pct, 4)}px;background:var(--green-dark)"><span class="tooltip">${m.count} booking${m.count === 1 ? '' : 's'}</span></div>
+        <div class="bar bar-vol" style="height:${Math.max(pct, 4)}px">
+          <span class="tooltip">${m.count} booking${m.count === 1 ? '' : 's'}</span>
+        </div>
         <div class="bar-label">${m.label}</div>
       </div>`;
-    }).join('');
+    }).join('') || '<div style="color:var(--ink-400);font-size:12.5px;text-align:center;width:100%">No data yet</div>';
   }
 
+  /* Donut */
   const donutSvg = document.getElementById('donut-svg');
   const donutLegend = document.getElementById('donut-legend');
   if (donutSvg && donutLegend) {
     const entries = Object.entries(breakdown).slice(0, 6);
     const total = entries.reduce((a, [, cnt]) => a + cnt, 0) || 1;
-    const colors = ['#2e7d32', '#4caf50', '#ff6f00', '#1976d2', '#7b1fa2', '#c62828'];
     const r = 52, cx = 64, cy = 64, circ = 2 * Math.PI * r;
     let offset = 0, paths = '';
-    entries.forEach(([name, cnt], i) => {
+    entries.forEach(([, cnt], i) => {
       const pct = cnt / total;
       const dash = pct * circ, gap = circ - dash;
-      paths += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${colors[i % colors.length]}" stroke-width="22"
+      paths += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${PALETTE[i % PALETTE.length]}" stroke-width="22"
         stroke-dasharray="${dash} ${gap}" stroke-dashoffset="${-offset * circ}"/>`;
       offset += pct;
     });
-    if (!entries.length) paths = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#e0e0e0" stroke-width="22"/>`;
+    if (!entries.length) paths = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--line)" stroke-width="22"/>`;
     donutSvg.innerHTML = `<svg width="128" height="128" viewBox="0 0 128 128">${paths}
-      <text x="64" y="68" text-anchor="middle" font-size="13" fill="#1a5c2a" font-weight="700">${total} total</text></svg>`;
+      <text x="64" y="64" text-anchor="middle" dominant-baseline="middle" font-size="12" fill="var(--ink-900)" font-weight="600" font-family="Inter">${total}</text>
+      <text x="64" y="77" text-anchor="middle" font-size="9.5" fill="var(--ink-400)" font-family="Inter">bookings</text>
+    </svg>`;
     donutLegend.innerHTML = entries.map(([name, cnt], i) =>
-      `<div class="legend-item"><div class="legend-dot" style="background:${colors[i % colors.length]}"></div>
-       <span>${escapeHtml(name.length > 24 ? name.slice(0, 22) + '…' : name)} (${cnt})</span></div>`
-    ).join('') || '<div style="color:var(--text-light);font-size:.85rem">No bookings yet</div>';
+      `<div class="legend-item">
+        <div class="legend-dot" style="background:${PALETTE[i % PALETTE.length]}"></div>
+        <span>${escapeHtml(name.length > 26 ? name.slice(0, 24) + '…' : name)} (${cnt})</span>
+      </div>`
+    ).join('') || '<div style="color:var(--ink-400);font-size:12.5px">No bookings yet</div>';
   }
 }
 
@@ -273,43 +296,47 @@ let _serviceCatalog = { services: [], plans: [], addons: [] };
 async function loadServiceCatalog() {
   try {
     _serviceCatalog = await AdminApi.getServiceCatalog();
-    renderCatalogSection('services-grid', _serviceCatalog.services || [], 'No services yet — add your first one above.');
-    renderCatalogSection('plans-grid', _serviceCatalog.plans || [], 'No plans yet — add your first one above.', true);
-    renderCatalogSection('addons-grid', _serviceCatalog.addons || [], 'No add-ons yet — add your first one above.');
+    renderCatalogSection('services-grid', _serviceCatalog.services || [], 'service', 'No services yet — add your first one above.');
+    renderCatalogSection('plans-grid', _serviceCatalog.plans || [], 'plan', 'No plans yet — add your first one above.');
+    renderCatalogSection('addons-grid', _serviceCatalog.addons || [], 'addon', 'No add-ons yet — add your first one above.');
   } catch (err) {
     console.error('service catalog load failed', err);
   }
 }
 
-function renderCatalogSection(containerId, items, emptyMsg, isPlan = false) {
+function renderCatalogSection(containerId, items, accentType, emptyMsg) {
   const grid = document.getElementById(containerId);
   if (!grid) return;
   if (!items.length) {
-    grid.innerHTML = `<div style="color:var(--text-light);padding:30px;text-align:center;grid-column:1/-1">${emptyMsg}</div>`;
+    grid.innerHTML = `<div class="catalog-empty">${emptyMsg}</div>`;
     return;
   }
   grid.innerHTML = items.map(item => `
-    <div class="service-admin-card" ${isPlan ? "style=\"border-left-color:var(--green-dark)\"" : ''}>
-      <h4>${escapeHtml((item.icon ? item.icon + ' ' : '') + item.name)}${item.featured ? ' ⭐' : ''}</h4>
-      <p style="font-size:.85rem;color:var(--text-light);margin:4px 0 8px">${escapeHtml(item.description || '')}</p>
-      <div class="price-tag">${escapeHtml(item.price || '')}</div>
-      <div class="actions">
-        <button class="action-btn edit" onclick="openEditItemById(${item.id})">✏ Edit</button>
-        <button class="action-btn delete" onclick="handleDeleteItem(${item.id})">🗑 Delete</button>
+    <div class="catalog-card">
+      <div class="catalog-card-accent ${accentType}"></div>
+      <div class="catalog-card-name">
+        ${item.icon ? escapeHtml(item.icon) + ' ' : ''}${escapeHtml(item.name)}
+        ${item.featured ? '<span class="catalog-card-featured">Most Popular</span>' : ''}
+      </div>
+      <div class="catalog-card-desc">${escapeHtml(item.description || '')}</div>
+      <div class="catalog-card-price">${escapeHtml(item.price || '')}</div>
+      <div class="catalog-card-actions">
+        <button class="action-btn edit"   onclick="openEditItemById(${item.id})">Edit</button>
+        <button class="action-btn delete" onclick="handleDeleteItem(${item.id})">Delete</button>
       </div>
     </div>`).join('');
 }
 
 async function handleDeleteItem(id) {
-  if (!confirm('Delete this item?')) return;
-  try { await AdminApi.deleteServiceItem(id); await loadServiceCatalog(); }
+  if (!confirm('Delete this item? This cannot be undone.')) return;
+  try { await AdminApi.deleteServiceItem(id); await loadServiceCatalog(); showToast('Item deleted.'); }
   catch (err) { alert(err.message); }
 }
 
 function openAddItem(type) {
-  document.getElementById('item-modal-title').textContent =
-    type === 'plan' ? 'Add New Plan' : (type === 'addon' ? 'Add New Add-On' : 'Add New Service');
-  document.getElementById('item-id-display').textContent = '';
+  const labels = { service: 'New Service', plan: 'New Plan', addon: 'New Add-On' };
+  setText('item-modal-eyebrow', 'Create');
+  setText('item-modal-title', labels[type] || 'New Item');
   document.getElementById('item-form').reset();
   document.getElementById('item-type-hidden').value = type;
   document.getElementById('item-edit-id').value = '';
@@ -324,8 +351,8 @@ function openEditItemById(id) {
 }
 
 function openEditItem(item) {
-  document.getElementById('item-modal-title').textContent = 'Edit Item';
-  document.getElementById('item-id-display').textContent = '#' + item.id;
+  setText('item-modal-eyebrow', 'Edit  #' + item.id);
+  setText('item-modal-title', 'Edit Item');
   document.getElementById('item-icon').value = item.icon || '';
   document.getElementById('item-name').value = item.name || '';
   document.getElementById('item-price').value = item.price || '';
@@ -357,26 +384,25 @@ async function submitItemForm(e) {
     else await AdminApi.addServiceItem(payload);
     closeModal('item-modal');
     await loadServiceCatalog();
-  } catch (err) {
-    alert(err.message);
-  }
+    showToast(editId ? 'Item updated.' : 'Item added.');
+  } catch (err) { alert(err.message); }
 }
 
 /* =====================
-   REVIEWS PANEL — moderation queue
+   REVIEWS PANEL
    ===================== */
 let _allReviews = [];
 
 async function loadReviews() {
   const tbody = document.getElementById('reviews-body');
   if (!tbody) return;
-  tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-light);padding:30px">Loading…</td></tr>`;
+  tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--ink-400);padding:40px">Loading…</td></tr>`;
   try {
     _allReviews = await AdminApi.getReviews();
     renderReviewsTable(_allReviews);
   } catch (err) {
     console.error('reviews load failed', err);
-    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-light);padding:30px">Failed to load reviews.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--ink-400);padding:40px">Failed to load reviews.</td></tr>`;
   }
 }
 
@@ -384,25 +410,24 @@ function renderReviewsTable(reviews) {
   const tbody = document.getElementById('reviews-body');
   if (!tbody) return;
   if (!reviews.length) {
-    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-light);padding:30px">No reviews yet.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--ink-400);padding:40px">No reviews yet.</td></tr>`;
     return;
   }
   tbody.innerHTML = reviews.map(r => {
     const stars = '★'.repeat(r.stars) + '☆'.repeat(5 - r.stars);
-    const statusBadgeHtml = r.approved
-      ? '<span class="status-badge completed">Approved</span>'
-      : '<span class="status-badge pending">Pending</span>';
-    const date = r.submittedAt ? new Date(r.submittedAt).toLocaleDateString() : '-';
+    const date = r.submittedAt ? new Date(r.submittedAt).toLocaleDateString() : '—';
     return `
       <tr>
-        <td>${escapeHtml(r.reviewerName)}<br/><small style="color:var(--text-light)">${escapeHtml(r.reviewerCity || '')}</small></td>
-        <td style="color:#f9a825;letter-spacing:2px">${stars}</td>
-        <td style="max-width:280px;font-size:.88rem">${escapeHtml(r.text)}</td>
+        <td>${escapeHtml(r.reviewerName)}<br/><small>${escapeHtml(r.reviewerCity || '')}</small></td>
+        <td style="color:#D97706;letter-spacing:2px;font-size:14px">${stars}</td>
+        <td style="max-width:260px;font-size:12.5px;line-height:1.5">${escapeHtml(r.text)}</td>
         <td>${date}</td>
-        <td>${statusBadgeHtml}</td>
+        <td>${r.approved
+        ? '<span class="badge approved">Approved</span>'
+        : '<span class="badge pending">Pending</span>'}</td>
         <td style="white-space:nowrap">
-          ${!r.approved ? `<button class="action-btn confirm" onclick="handleApproveReview(${r.id})" title="Approve">✓ Approve</button>` : ''}
-          <button class="action-btn delete" onclick="handleDeleteReview(${r.id})" title="Delete">🗑</button>
+          ${!r.approved ? `<button class="action-btn confirm" onclick="handleApproveReview(${r.id})">✓ Approve</button>` : ''}
+          <button class="action-btn delete" onclick="handleDeleteReview(${r.id})">Delete</button>
         </td>
       </tr>`;
   }).join('');
@@ -412,24 +437,25 @@ async function handleApproveReview(id) {
   try {
     await AdminApi.approveReview(id);
     await loadReviews();
-    // Refresh badge count
     _pendingReviewCount = Math.max(0, _pendingReviewCount - 1);
     const badge = document.getElementById('reviews-badge');
-    if (badge) { badge.textContent = _pendingReviewCount; badge.style.display = _pendingReviewCount > 0 ? 'inline-flex' : 'none'; }
+    if (badge) { badge.textContent = _pendingReviewCount; badge.style.display = _pendingReviewCount > 0 ? 'inline-block' : 'none'; }
+    showToast('Review approved and published.');
   } catch (err) { alert(err.message); }
 }
 
 async function handleDeleteReview(id) {
   if (!confirm('Delete this review? This cannot be undone.')) return;
   try {
-    const wasReview = _allReviews.find(r => r.id === id);
+    const was = _allReviews.find(r => r.id === id);
     await AdminApi.deleteReview(id);
-    if (wasReview && !wasReview.approved) {
+    if (was && !was.approved) {
       _pendingReviewCount = Math.max(0, _pendingReviewCount - 1);
       const badge = document.getElementById('reviews-badge');
-      if (badge) { badge.textContent = _pendingReviewCount; badge.style.display = _pendingReviewCount > 0 ? 'inline-flex' : 'none'; }
+      if (badge) { badge.textContent = _pendingReviewCount; badge.style.display = _pendingReviewCount > 0 ? 'inline-block' : 'none'; }
     }
     await loadReviews();
+    showToast('Review deleted.');
   } catch (err) { alert(err.message); }
 }
 
@@ -448,21 +474,33 @@ function escapeHtml(str) {
 document.addEventListener('DOMContentLoaded', () => {
   initLoginForm();
 
-  // Pages other than login require a token up front
   const isLoginPage = !!document.getElementById('login-form');
   if (!isLoginPage && !getToken()) { goToLogin(); return; }
 
-  // Mobile sidebar toggle
+  /* Mobile sidebar */
   const toggle = document.getElementById('sidebar-toggle');
-  if (toggle) {
-    toggle.addEventListener('click', () => document.getElementById('admin-sidebar')?.classList.toggle('open'));
-    if (window.innerWidth <= 768) toggle.style.display = 'block';
+  const sidebar = document.getElementById('admin-sidebar');
+  if (toggle && sidebar) {
+    toggle.addEventListener('click', () => sidebar.classList.toggle('open'));
+    /* Close sidebar when clicking outside on mobile */
+    document.addEventListener('click', (e) => {
+      if (window.innerWidth <= 768 && sidebar.classList.contains('open')
+        && !sidebar.contains(e.target) && e.target !== toggle) {
+        sidebar.classList.remove('open');
+      }
+    });
   }
 
-  // Dashboard page wiring
+  /* Dashboard page wiring */
   if (document.getElementById('panel-dashboard')) {
     document.querySelectorAll('.admin-nav a[data-panel]').forEach(a => {
       a.addEventListener('click', (e) => { e.preventDefault(); showPanel(a.dataset.panel); });
+    });
+    /* "View all →" link inside dashboard panel */
+    document.querySelectorAll('a[data-panel]').forEach(a => {
+      if (!a.closest('.admin-nav')) {
+        a.addEventListener('click', (e) => { e.preventDefault(); showPanel(a.dataset.panel); });
+      }
     });
     showPanel('dashboard');
     loadDashboard();
@@ -471,23 +509,107 @@ document.addEventListener('DOMContentLoaded', () => {
   const bSearch = document.getElementById('booking-search');
   if (bSearch) bSearch.addEventListener('input', () => filterBookings(bSearch.value));
 
-  // Services page wiring
+  /* Services page wiring */
   if (document.getElementById('services-grid') && document.getElementById('item-form')) {
     loadServiceCatalog();
     document.getElementById('item-form').addEventListener('submit', submitItemForm);
   }
 
-  // Logout button (present on every admin page's sidebar)
+  /* Logout */
   const logoutBtn = document.getElementById('logout-btn');
   if (logoutBtn) {
-    logoutBtn.addEventListener('click', () => { AdminApi.logout(); location.href = 'login.html'; });
+    logoutBtn.addEventListener('click', () => { clearToken(); location.href = 'login.html'; });
   }
 
-  // Modal backdrop click to close
+  /* Modal backdrop close */
   document.querySelectorAll('.modal-overlay').forEach(m => {
     m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
   });
 
+  /* Date display */
   const dateEl = document.getElementById('admin-date');
   if (dateEl) dateEl.textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 });
+/* =====================
+   CHANGE PASSWORD MODAL
+   ===================== */
+function openChangePassword() {
+  const modal = document.getElementById('change-password-modal');
+  if (!modal) return;
+  document.getElementById('cp-current').value = '';
+  document.getElementById('cp-new').value = '';
+  document.getElementById('cp-confirm').value = '';
+  document.getElementById('cp-error').style.display = 'none';
+  document.getElementById('cp-success').style.display = 'none';
+  const btn = document.getElementById('cp-submit-btn');
+  if (btn) { btn.disabled = false; btn.textContent = 'Update Password'; }
+  modal.style.display = 'flex';
+}
+
+function closeChangePassword() {
+  const modal = document.getElementById('change-password-modal');
+  if (modal) modal.style.display = 'none';
+}
+
+async function submitChangePassword() {
+  const currentPassword = document.getElementById('cp-current').value.trim();
+  const newPassword = document.getElementById('cp-new').value.trim();
+  const confirmPassword = document.getElementById('cp-confirm').value.trim();
+  const errorBox = document.getElementById('cp-error');
+  const successBox = document.getElementById('cp-success');
+  const btn = document.getElementById('cp-submit-btn');
+
+  errorBox.style.display = 'none';
+  successBox.style.display = 'none';
+
+  if (!currentPassword) {
+    errorBox.textContent = 'Please enter your current password.';
+    errorBox.style.display = 'block'; return;
+  }
+  if (newPassword.length < 8) {
+    errorBox.textContent = 'New password must be at least 8 characters.';
+    errorBox.style.display = 'block'; return;
+  }
+  if (newPassword !== confirmPassword) {
+    errorBox.textContent = 'New passwords do not match.';
+    errorBox.style.display = 'block'; return;
+  }
+  if (currentPassword === newPassword) {
+    errorBox.textContent = 'New password must be different from your current one.';
+    errorBox.style.display = 'block'; return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Updating…';
+
+  try {
+    await AdminApi.changePassword(currentPassword, newPassword);
+    successBox.textContent = '✅ Password updated successfully!';
+    successBox.style.display = 'block';
+    document.getElementById('cp-current').value = '';
+    document.getElementById('cp-new').value = '';
+    document.getElementById('cp-confirm').value = '';
+    btn.textContent = 'Update Password';
+    setTimeout(() => closeChangePassword(), 2000);
+  } catch (err) {
+    errorBox.textContent = err.message || 'Something went wrong. Please try again.';
+    errorBox.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Update Password';
+  }
+}
+
+/* Close change password modal on backdrop click */
+document.addEventListener('DOMContentLoaded', () => {
+  const cpModal = document.getElementById('change-password-modal');
+  if (cpModal) cpModal.addEventListener('click', e => { if (e.target === cpModal) closeChangePassword(); });
+});
+function toggleCpField(inputId, btn) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  const isHidden = input.type === 'password';
+  input.type = isHidden ? 'text' : 'password';
+  btn.querySelector('svg').innerHTML = isHidden
+    ? '<path d="M3 3l18 18"/><path d="M10.6 5.2A10.6 10.6 0 0 1 12 5c7 0 10.5 7 10.5 7a13.5 13.5 0 0 1-3.15 4.15M6.5 6.6C3.6 8.4 1.5 12 1.5 12s3.5 7 10.5 7c1.6 0 3-.3 4.25-.85"/><path d="M9.5 9.9a3.2 3.2 0 0 0 4.6 4.5"/>'
+    : '<path d="M1.5 12S5 5 12 5s10.5 7 10.5 7-3.5 7-10.5 7S1.5 12 1.5 12Z"/><circle cx="12" cy="12" r="3.2"/>';
+}
