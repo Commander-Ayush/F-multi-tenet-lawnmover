@@ -198,17 +198,52 @@ function renderBookingsTable(bookings) {
 }
 
 async function handleComplete(id) {
-  try { await AdminApi.completeBooking(id); await loadDashboard(); showToast('Booking marked complete.'); }
-  catch (err) { alert(err.message); }
+  const row = document.querySelector(`button.confirm[onclick="handleComplete(${id})"]`)?.closest('tr');
+  if (row) {
+    row.querySelector('td:nth-last-child(2)').innerHTML = '<span class="badge completing"><span class="badge-spinner">↻</span>Completing…</span>';
+    row.querySelector('td:last-child').innerHTML = '<button class="action-btn delete" onclick="handleDelete(' + id + ')">Delete</button>';
+  }
+  try {
+    await AdminApi.completeBooking(id);
+    await loadDashboard();
+    showToast('Booking marked complete.');
+  } catch (err) {
+    await loadDashboard();
+    alert(err.message);
+  }
 }
+
 async function handleReopen(id) {
-  try { await AdminApi.reopenBooking(id); await loadDashboard(); showToast('Booking reopened.'); }
-  catch (err) { alert(err.message); }
+  const row = document.querySelector(`button.reopen[onclick="handleReopen(${id})"]`)?.closest('tr');
+  if (row) {
+    row.querySelector('td:nth-last-child(2)').innerHTML = '<span class="badge reopening"><span class="badge-spinner">↻</span>Reopening…</span>';
+    row.querySelector('td:last-child').innerHTML = '<button class="action-btn delete" onclick="handleDelete(' + id + ')">Delete</button>';
+  }
+  try {
+    await AdminApi.reopenBooking(id);
+    await loadDashboard();
+    showToast('Booking reopened.');
+  } catch (err) {
+    await loadDashboard();
+    alert(err.message);
+  }
 }
+
 async function handleDelete(id) {
   if (!confirm('Delete this booking? This cannot be undone.')) return;
-  try { await AdminApi.deleteBooking(id); await loadDashboard(); showToast('Booking deleted.'); }
-  catch (err) { alert(err.message); }
+  const btn = document.querySelector(`button.delete[onclick="handleDelete(${id})"]`);
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<span class="badge-spinner">↻</span>Deleting…';
+  }
+  try {
+    await AdminApi.deleteBooking(id);
+    await loadDashboard();
+    showToast('Booking deleted.');
+  } catch (err) {
+    if (btn) { btn.disabled = false; btn.innerHTML = 'Delete'; }
+    alert(err.message);
+  }
 }
 
 function filterBookings(query) {
@@ -389,7 +424,7 @@ async function submitItemForm(e) {
 }
 
 /* =====================
-   REVIEWS PANEL
+    REVIEWS PANEL
    ===================== */
 let _allReviews = [];
 
@@ -490,6 +525,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  const delModal = document.getElementById('delete-modal');
+  if (delModal) delModal.addEventListener('click', e => { if (e.target === delModal) closeDeleteModal(); });
 
   /* Dashboard page wiring */
   if (document.getElementById('panel-dashboard')) {
@@ -612,4 +650,40 @@ function toggleCpField(inputId, btn) {
   btn.querySelector('svg').innerHTML = isHidden
     ? '<path d="M3 3l18 18"/><path d="M10.6 5.2A10.6 10.6 0 0 1 12 5c7 0 10.5 7 10.5 7a13.5 13.5 0 0 1-3.15 4.15M6.5 6.6C3.6 8.4 1.5 12 1.5 12s3.5 7 10.5 7c1.6 0 3-.3 4.25-.85"/><path d="M9.5 9.9a3.2 3.2 0 0 0 4.6 4.5"/>'
     : '<path d="M1.5 12S5 5 12 5s10.5 7 10.5 7-3.5 7-10.5 7S1.5 12 1.5 12Z"/><circle cx="12" cy="12" r="3.2"/>';
+}
+
+let _pendingDeleteId = null;
+
+function openDeleteModal(id) {
+  _pendingDeleteId = id;
+  const modal = document.getElementById('delete-modal');
+  modal.style.display = 'flex';
+  document.getElementById('delete-confirm-btn').onclick = confirmDelete;
+}
+
+function closeDeleteModal() {
+  _pendingDeleteId = null;
+  document.getElementById('delete-modal').style.display = 'none';
+}
+
+async function confirmDelete() {
+  const id = _pendingDeleteId;
+  if (!id) return;
+  const btn = document.getElementById('delete-confirm-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="badge-spinner">↻</span> Deleting…';
+  try {
+    await AdminApi.deleteBooking(id);
+    closeDeleteModal();
+    await loadDashboard();
+    showToast('Booking deleted.');
+  } catch (err) {
+    btn.disabled = false;
+    btn.innerHTML = 'Delete';
+    alert(err.message);
+  }
+}
+
+async function handleDelete(id) {
+  openDeleteModal(id);
 }
