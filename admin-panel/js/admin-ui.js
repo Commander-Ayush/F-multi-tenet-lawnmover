@@ -512,59 +512,187 @@ async function handleDeleteReview(id) {
     await loadReviews();
     showToast('Review deleted.');
   } catch (err) { alert(err.message); }
-}
-
-/* =====================
-   SHARED HELPERS
-   ===================== */
+}/* =====================
+SHARED HELPERS
+===================== */
 function escapeHtml(str) {
   const div = document.createElement('div');
   div.textContent = str == null ? '' : String(str);
   return div.innerHTML;
 }
+
 /* =====================
-  INIT
-  ===================== */
+CHANGE PASSWORD MODAL
+===================== */
+function openChangePassword() {
+  const modal = document.getElementById('change-password-modal');
+  if (!modal) return;
+
+  document.getElementById('cp-current').value = '';
+  document.getElementById('cp-new').value = '';
+  document.getElementById('cp-confirm').value = '';
+
+  document.getElementById('cp-error').style.display = 'none';
+  document.getElementById('cp-success').style.display = 'none';
+
+  const btn = document.getElementById('cp-submit-btn');
+  if (btn) {
+    btn.disabled = false;
+    btn.textContent = 'Update Password';
+  }
+
+  modal.style.display = 'flex';
+}
+
+function closeChangePassword() {
+  const modal = document.getElementById('change-password-modal');
+  if (modal) modal.style.display = 'none';
+}
+
+async function submitChangePassword() {
+  const currentPassword = document.getElementById('cp-current').value.trim();
+  const newPassword = document.getElementById('cp-new').value.trim();
+  const confirmPassword = document.getElementById('cp-confirm').value.trim();
+
+  const errorBox = document.getElementById('cp-error');
+  const successBox = document.getElementById('cp-success');
+  const btn = document.getElementById('cp-submit-btn');
+
+  errorBox.style.display = 'none';
+  successBox.style.display = 'none';
+
+  if (!currentPassword) {
+    errorBox.textContent = 'Please enter your current password.';
+    errorBox.style.display = 'block';
+    return;
+  }
+
+  if (newPassword.length < 8) {
+    errorBox.textContent = 'New password must be at least 8 characters.';
+    errorBox.style.display = 'block';
+    return;
+  }
+
+  if (newPassword !== confirmPassword) {
+    errorBox.textContent = 'New passwords do not match.';
+    errorBox.style.display = 'block';
+    return;
+  }
+
+  if (currentPassword === newPassword) {
+    errorBox.textContent = 'New password must be different from your current one.';
+    errorBox.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Updating…';
+
+  try {
+    await AdminApi.changePassword(currentPassword, newPassword);
+
+    successBox.textContent = 'Password updated successfully!';
+    successBox.style.display = 'block';
+
+    document.getElementById('cp-current').value = '';
+    document.getElementById('cp-new').value = '';
+    document.getElementById('cp-confirm').value = '';
+
+    btn.disabled = false;
+    btn.textContent = 'Update Password';
+
+    setTimeout(closeChangePassword, 2000);
+
+  } catch (err) {
+    errorBox.textContent = err.message || 'Something went wrong. Please try again.';
+    errorBox.style.display = 'block';
+
+    btn.disabled = false;
+    btn.textContent = 'Update Password';
+  }
+}
+
+/* =====================
+INIT
+===================== */
 document.addEventListener('DOMContentLoaded', () => {
+
+  /* Login page */
   initLoginForm();
 
   const isLoginPage = !!document.getElementById('login-form');
-  if (!isLoginPage && !getToken()) { goToLogin(); return; }
+  if (!isLoginPage && !getToken()) {
+    goToLogin();
+    return;
+  }
+
+  /* Change password modal backdrop */
+  const cpModal = document.getElementById('change-password-modal');
+  if (cpModal) {
+    cpModal.addEventListener('click', (e) => {
+      if (e.target === cpModal) {
+        closeChangePassword();
+      }
+    });
+  }
 
   /* Mobile sidebar */
   const toggle = document.getElementById('sidebar-toggle');
   const sidebar = document.getElementById('admin-sidebar');
+
   if (toggle && sidebar) {
-    toggle.addEventListener('click', () => sidebar.classList.toggle('open'));
-    /* Close sidebar when clicking outside on mobile */
+    toggle.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+    });
+
     document.addEventListener('click', (e) => {
-      if (window.innerWidth <= 768 && sidebar.classList.contains('open')
-        && !sidebar.contains(e.target) && e.target !== toggle) {
+      if (
+        window.innerWidth <= 768 &&
+        sidebar.classList.contains('open') &&
+        !sidebar.contains(e.target) &&
+        e.target !== toggle
+      ) {
         sidebar.classList.remove('open');
       }
     });
   }
 
-  /* Dashboard page wiring */
+  /* Dashboard */
   if (document.getElementById('panel-dashboard')) {
+
     document.querySelectorAll('.admin-nav a[data-panel]').forEach(a => {
-      a.addEventListener('click', (e) => { e.preventDefault(); showPanel(a.dataset.panel); });
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        showPanel(a.dataset.panel);
+      });
     });
-    /* "View all →" link inside dashboard panel */
+
     document.querySelectorAll('a[data-panel]').forEach(a => {
       if (!a.closest('.admin-nav')) {
-        a.addEventListener('click', (e) => { e.preventDefault(); showPanel(a.dataset.panel); });
+        a.addEventListener('click', (e) => {
+          e.preventDefault();
+          showPanel(a.dataset.panel);
+        });
       }
     });
+
     showPanel('dashboard');
     loadDashboard();
   }
 
+  /* Booking search */
   const bSearch = document.getElementById('booking-search');
-  if (bSearch) bSearch.addEventListener('input', () => filterBookings(bSearch.value));
+  if (bSearch) {
+    bSearch.addEventListener('input', () => {
+      filterBookings(bSearch.value);
+    });
+  }
 
-  /* Services page wiring */
-  if (document.getElementById('services-grid') && document.getElementById('item-form')) {
+  /* Services */
+  if (
+    document.getElementById('services-grid') &&
+    document.getElementById('item-form')
+  ) {
     loadServiceCatalog();
     document.getElementById('item-form').addEventListener('submit', submitItemForm);
   }
@@ -572,15 +700,30 @@ document.addEventListener('DOMContentLoaded', () => {
   /* Logout */
   const logoutBtn = document.getElementById('logout-btn');
   if (logoutBtn) {
-    logoutBtn.addEventListener('click', () => { clearToken(); location.href = 'login.html'; });
+    logoutBtn.addEventListener('click', () => {
+      clearToken();
+      location.href = 'login.html';
+    });
   }
 
-  /* Modal backdrop close */
+  /* Generic modal backdrop */
   document.querySelectorAll('.modal-overlay').forEach(m => {
-    m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+    m.addEventListener('click', e => {
+      if (e.target === m) {
+        m.classList.remove('open');
+      }
+    });
   });
 
-  /* Date display */
+  /* Date */
   const dateEl = document.getElementById('admin-date');
-  if (dateEl) dateEl.textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  if (dateEl) {
+    dateEl.textContent = new Date().toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  }
+
 });
