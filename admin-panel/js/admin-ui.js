@@ -526,3 +526,6 @@ function escapeHtml(str) {
 /* =====================
    INIT
    ===================== */
+document.addEventListener("DOMContentLoaded", () => {
+  initLoginForm();
+});
