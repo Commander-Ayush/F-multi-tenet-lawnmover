@@ -522,17 +522,65 @@ function escapeHtml(str) {
   div.textContent = str == null ? '' : String(str);
   return div.innerHTML;
 }
-
 /* =====================
-   INIT
-   ===================== */
+  INIT
+  ===================== */
 document.addEventListener('DOMContentLoaded', () => {
-  if (document.getElementById('login-form')) {
-    initLoginForm();
+  initLoginForm();
+
+  const isLoginPage = !!document.getElementById('login-form');
+  if (!isLoginPage && !getToken()) { goToLogin(); return; }
+
+  /* Mobile sidebar */
+  const toggle = document.getElementById('sidebar-toggle');
+  const sidebar = document.getElementById('admin-sidebar');
+  if (toggle && sidebar) {
+    toggle.addEventListener('click', () => sidebar.classList.toggle('open'));
+    /* Close sidebar when clicking outside on mobile */
+    document.addEventListener('click', (e) => {
+      if (window.innerWidth <= 768 && sidebar.classList.contains('open')
+        && !sidebar.contains(e.target) && e.target !== toggle) {
+        sidebar.classList.remove('open');
+      }
+    });
   }
 
-  if (document.body.dataset.page === 'dashboard') {
+  /* Dashboard page wiring */
+  if (document.getElementById('panel-dashboard')) {
+    document.querySelectorAll('.admin-nav a[data-panel]').forEach(a => {
+      a.addEventListener('click', (e) => { e.preventDefault(); showPanel(a.dataset.panel); });
+    });
+    /* "View all →" link inside dashboard panel */
+    document.querySelectorAll('a[data-panel]').forEach(a => {
+      if (!a.closest('.admin-nav')) {
+        a.addEventListener('click', (e) => { e.preventDefault(); showPanel(a.dataset.panel); });
+      }
+    });
+    showPanel('dashboard');
     loadDashboard();
-    loadServiceCatalog();
   }
+
+  const bSearch = document.getElementById('booking-search');
+  if (bSearch) bSearch.addEventListener('input', () => filterBookings(bSearch.value));
+
+  /* Services page wiring */
+  if (document.getElementById('services-grid') && document.getElementById('item-form')) {
+    loadServiceCatalog();
+    document.getElementById('item-form').addEventListener('submit', submitItemForm);
+  }
+
+  /* Logout */
+  const logoutBtn = document.getElementById('logout-btn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => { clearToken(); location.href = 'login.html'; });
+  }
+
+  /* Modal backdrop close */
+  document.querySelectorAll('.modal-overlay').forEach(m => {
+    m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+  });
+
+  /* Date display */
+  const dateEl = document.getElementById('admin-date');
+  if (dateEl) dateEl.textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 });
