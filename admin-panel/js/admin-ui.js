@@ -526,6 +526,13 @@ function escapeHtml(str) {
 /* =====================
    INIT
    ===================== */
-document.addEventListener("DOMContentLoaded", () => {
-  initLoginForm();
+document.addEventListener('DOMContentLoaded', () => {
+  if (document.getElementById('login-form')) {
+    initLoginForm();
+  }
+
+  if (document.body.dataset.page === 'dashboard') {
+    loadDashboard();
+    loadServiceCatalog();
+  }
 });
