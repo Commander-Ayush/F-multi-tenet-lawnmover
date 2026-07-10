@@ -10,7 +10,7 @@
    send a company id from here. See CONTRACT.md for the full spec.
 */
 
-const API_BASE = "http://54.175.155.252:8080"; // ← change this once, to your VPS's address, when going live
+const API_BASE = "https://growthmultiplier.online";
 
 async function apiGet(path) {
   const res = await fetch(API_BASE + path);
