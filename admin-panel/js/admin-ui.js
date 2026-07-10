@@ -228,22 +228,42 @@ async function handleReopen(id) {
     alert(err.message);
   }
 }
+let _pendingDeleteId = null;
 
-async function handleDelete(id) {
-  if (!confirm('Delete this booking? This cannot be undone.')) return;
-  const btn = document.querySelector(`button.delete[onclick="handleDelete(${id})"]`);
-  if (btn) {
-    btn.disabled = true;
-    btn.innerHTML = '<span class="badge-spinner">↻</span>Deleting…';
-  }
+function openDeleteModal(id) {
+  _pendingDeleteId = id;
+  const modal = document.getElementById('delete-modal');
+  modal.style.display = 'flex';
+  document.getElementById('delete-confirm-btn').onclick = confirmDelete;
+}
+
+function closeDeleteModal() {
+  _pendingDeleteId = null;
+  document.getElementById('delete-modal').style.display = 'none';
+  const btn = document.getElementById('delete-confirm-btn');
+  if (btn) { btn.disabled = false; btn.innerHTML = 'Delete'; }
+}
+
+async function confirmDelete() {
+  const id = _pendingDeleteId;
+  if (!id) return;
+  const btn = document.getElementById('delete-confirm-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="badge-spinner">↻</span> Deleting…';
   try {
     await AdminApi.deleteBooking(id);
+    closeDeleteModal();
     await loadDashboard();
     showToast('Booking deleted.');
   } catch (err) {
-    if (btn) { btn.disabled = false; btn.innerHTML = 'Delete'; }
+    btn.disabled = false;
+    btn.innerHTML = 'Delete';
     alert(err.message);
   }
+}
+
+async function handleDelete(id) {
+  openDeleteModal(id);
 }
 
 function filterBookings(query) {
@@ -506,184 +526,3 @@ function escapeHtml(str) {
 /* =====================
    INIT
    ===================== */
-document.addEventListener('DOMContentLoaded', () => {
-  initLoginForm();
-
-  const isLoginPage = !!document.getElementById('login-form');
-  if (!isLoginPage && !getToken()) { goToLogin(); return; }
-
-  /* Mobile sidebar */
-  const toggle = document.getElementById('sidebar-toggle');
-  const sidebar = document.getElementById('admin-sidebar');
-  if (toggle && sidebar) {
-    toggle.addEventListener('click', () => sidebar.classList.toggle('open'));
-    /* Close sidebar when clicking outside on mobile */
-    document.addEventListener('click', (e) => {
-      if (window.innerWidth <= 768 && sidebar.classList.contains('open')
-        && !sidebar.contains(e.target) && e.target !== toggle) {
-        sidebar.classList.remove('open');
-      }
-    });
-  }
-
-  const delModal = document.getElementById('delete-modal');
-  if (delModal) delModal.addEventListener('click', e => { if (e.target === delModal) closeDeleteModal(); });
-
-  /* Dashboard page wiring */
-  if (document.getElementById('panel-dashboard')) {
-    document.querySelectorAll('.admin-nav a[data-panel]').forEach(a => {
-      a.addEventListener('click', (e) => { e.preventDefault(); showPanel(a.dataset.panel); });
-    });
-    /* "View all →" link inside dashboard panel */
-    document.querySelectorAll('a[data-panel]').forEach(a => {
-      if (!a.closest('.admin-nav')) {
-        a.addEventListener('click', (e) => { e.preventDefault(); showPanel(a.dataset.panel); });
-      }
-    });
-    showPanel('dashboard');
-    loadDashboard();
-  }
-
-  const bSearch = document.getElementById('booking-search');
-  if (bSearch) bSearch.addEventListener('input', () => filterBookings(bSearch.value));
-
-  /* Services page wiring */
-  if (document.getElementById('services-grid') && document.getElementById('item-form')) {
-    loadServiceCatalog();
-    document.getElementById('item-form').addEventListener('submit', submitItemForm);
-  }
-
-  /* Logout */
-  const logoutBtn = document.getElementById('logout-btn');
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', () => { clearToken(); location.href = 'login.html'; });
-  }
-
-  /* Modal backdrop close */
-  document.querySelectorAll('.modal-overlay').forEach(m => {
-    m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
-  });
-
-  /* Date display */
-  const dateEl = document.getElementById('admin-date');
-  if (dateEl) dateEl.textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-});
-/* =====================
-   CHANGE PASSWORD MODAL
-   ===================== */
-function openChangePassword() {
-  const modal = document.getElementById('change-password-modal');
-  if (!modal) return;
-  document.getElementById('cp-current').value = '';
-  document.getElementById('cp-new').value = '';
-  document.getElementById('cp-confirm').value = '';
-  document.getElementById('cp-error').style.display = 'none';
-  document.getElementById('cp-success').style.display = 'none';
-  const btn = document.getElementById('cp-submit-btn');
-  if (btn) { btn.disabled = false; btn.textContent = 'Update Password'; }
-  modal.style.display = 'flex';
-}
-
-function closeChangePassword() {
-  const modal = document.getElementById('change-password-modal');
-  if (modal) modal.style.display = 'none';
-}
-
-async function submitChangePassword() {
-  const currentPassword = document.getElementById('cp-current').value.trim();
-  const newPassword = document.getElementById('cp-new').value.trim();
-  const confirmPassword = document.getElementById('cp-confirm').value.trim();
-  const errorBox = document.getElementById('cp-error');
-  const successBox = document.getElementById('cp-success');
-  const btn = document.getElementById('cp-submit-btn');
-
-  errorBox.style.display = 'none';
-  successBox.style.display = 'none';
-
-  if (!currentPassword) {
-    errorBox.textContent = 'Please enter your current password.';
-    errorBox.style.display = 'block'; return;
-  }
-  if (newPassword.length < 8) {
-    errorBox.textContent = 'New password must be at least 8 characters.';
-    errorBox.style.display = 'block'; return;
-  }
-  if (newPassword !== confirmPassword) {
-    errorBox.textContent = 'New passwords do not match.';
-    errorBox.style.display = 'block'; return;
-  }
-  if (currentPassword === newPassword) {
-    errorBox.textContent = 'New password must be different from your current one.';
-    errorBox.style.display = 'block'; return;
-  }
-
-  btn.disabled = true;
-  btn.textContent = 'Updating…';
-
-  try {
-    await AdminApi.changePassword(currentPassword, newPassword);
-    successBox.textContent = '✅ Password updated successfully!';
-    successBox.style.display = 'block';
-    document.getElementById('cp-current').value = '';
-    document.getElementById('cp-new').value = '';
-    document.getElementById('cp-confirm').value = '';
-    btn.textContent = 'Update Password';
-    setTimeout(() => closeChangePassword(), 2000);
-  } catch (err) {
-    errorBox.textContent = err.message || 'Something went wrong. Please try again.';
-    errorBox.style.display = 'block';
-    btn.disabled = false;
-    btn.textContent = 'Update Password';
-  }
-}
-
-/* Close change password modal on backdrop click */
-document.addEventListener('DOMContentLoaded', () => {
-  const cpModal = document.getElementById('change-password-modal');
-  if (cpModal) cpModal.addEventListener('click', e => { if (e.target === cpModal) closeChangePassword(); });
-});
-function toggleCpField(inputId, btn) {
-  const input = document.getElementById(inputId);
-  if (!input) return;
-  const isHidden = input.type === 'password';
-  input.type = isHidden ? 'text' : 'password';
-  btn.querySelector('svg').innerHTML = isHidden
-    ? '<path d="M3 3l18 18"/><path d="M10.6 5.2A10.6 10.6 0 0 1 12 5c7 0 10.5 7 10.5 7a13.5 13.5 0 0 1-3.15 4.15M6.5 6.6C3.6 8.4 1.5 12 1.5 12s3.5 7 10.5 7c1.6 0 3-.3 4.25-.85"/><path d="M9.5 9.9a3.2 3.2 0 0 0 4.6 4.5"/>'
-    : '<path d="M1.5 12S5 5 12 5s10.5 7 10.5 7-3.5 7-10.5 7S1.5 12 1.5 12Z"/><circle cx="12" cy="12" r="3.2"/>';
-}
-
-let _pendingDeleteId = null;
-
-function openDeleteModal(id) {
-  _pendingDeleteId = id;
-  const modal = document.getElementById('delete-modal');
-  modal.style.display = 'flex';
-  document.getElementById('delete-confirm-btn').onclick = confirmDelete;
-}
-
-function closeDeleteModal() {
-  _pendingDeleteId = null;
-  document.getElementById('delete-modal').style.display = 'none';
-}
-
-async function confirmDelete() {
-  const id = _pendingDeleteId;
-  if (!id) return;
-  const btn = document.getElementById('delete-confirm-btn');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="badge-spinner">↻</span> Deleting…';
-  try {
-    await AdminApi.deleteBooking(id);
-    closeDeleteModal();
-    await loadDashboard();
-    showToast('Booking deleted.');
-  } catch (err) {
-    btn.disabled = false;
-    btn.innerHTML = 'Delete';
-    alert(err.message);
-  }
-}
-
-async function handleDelete(id) {
-  openDeleteModal(id);
-}
