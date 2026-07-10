@@ -727,3 +727,33 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 });
+/* =====================
+PASSWORD VISIBILITY TOGGLE
+===================== */
+function toggleCpField(inputId, buttonEl) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+
+  const svg = buttonEl.querySelector('.eye-icon');
+
+  if (input.type === 'password') {
+    // Switch to visible text
+    input.type = 'text';
+
+    // Optional: Visually update the SVG icon to look "slashed" or closed when password is shown
+    if (svg) {
+      svg.style.color = 'var(--forest-800)'; // Change color to show it's active
+      // Adds a visual slash line across the eye dynamically
+      svg.innerHTML += '<line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" stroke-width="1.6" class="eye-slash-line" />';
+    }
+  } else {
+    // Switch back to dots
+    input.type = 'password';
+
+    if (svg) {
+      svg.style.color = '#9ca3af'; // Reset color
+      const slash = svg.querySelector('.eye-slash-line');
+      if (slash) slash.remove(); // Remove the slash line
+    }
+  }
+}
