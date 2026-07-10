@@ -370,7 +370,7 @@ function renderReviews(reviews, allReviews = null) {
     const btn = document.createElement('div');
     btn.id = 'show-all-reviews-btn';
     btn.style.cssText = 'grid-column:1/-1;text-align:center;margin-top:8px';
-    btn.innerHTML = `<button class="btn btn-green" onclick="showAllReviews()">See all ${allReviews.length} reviews →</button>`;
+    btn.innerHTML = `<button class="btn btn-green" onclick="showAllReviews()">See all reviews →</button>`;
     grid.appendChild(btn);
 
     window._allReviewsCache = allReviews;
