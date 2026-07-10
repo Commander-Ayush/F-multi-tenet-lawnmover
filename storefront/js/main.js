@@ -320,7 +320,7 @@ function getInitials(name) {
   return initials.toUpperCase();
 }
 
-function renderReviews(reviews) {
+function renderReviews(reviews, allReviews = null) {
   const grid = document.getElementById('reviews-grid');
   if (!grid) return;
 
@@ -329,15 +329,16 @@ function renderReviews(reviews) {
     return;
   }
 
-  const avgStars = reviews.reduce((s, r) => s + r.stars, 0) / reviews.length;
+  const avgStars = (allReviews || reviews).reduce((s, r) => s + r.stars, 0) / (allReviews || reviews).length;
+  const total = (allReviews || reviews).length;
   const avgEl = document.getElementById('avg-rating');
   const countEl = document.getElementById('review-count');
   if (avgEl) avgEl.textContent = avgStars.toFixed(1);
-  if (countEl) countEl.textContent = `Based on ${reviews.length} review${reviews.length === 1 ? '' : 's'}`;
+  if (countEl) countEl.textContent = `Based on ${total} review${total === 1 ? '' : 's'}`;
 
   for (let star = 1; star <= 5; star++) {
-    const cnt = reviews.filter(r => r.stars === star).length;
-    const pct = reviews.length > 0 ? (cnt / reviews.length * 100).toFixed(0) : 0;
+    const cnt = (allReviews || reviews).filter(r => r.stars === star).length;
+    const pct = total > 0 ? (cnt / total * 100).toFixed(0) : 0;
     const bar = document.getElementById(`bar-${star}`);
     const label = document.getElementById(`pct-${star}`);
     if (bar) bar.style.width = pct + '%';
@@ -360,6 +361,50 @@ function renderReviews(reviews) {
         </div>
       </div>`;
   }).join('');
+
+  // Show "See all reviews" button if there are more than 3
+  const existing = document.getElementById('show-all-reviews-btn');
+  if (existing) existing.remove();
+
+  if (allReviews && allReviews.length > 3) {
+    const btn = document.createElement('div');
+    btn.id = 'show-all-reviews-btn';
+    btn.style.cssText = 'grid-column:1/-1;text-align:center;margin-top:8px';
+    btn.innerHTML = `<button class="btn btn-green" onclick="showAllReviews()">See all ${allReviews.length} reviews →</button>`;
+    grid.appendChild(btn);
+
+    window._allReviewsCache = allReviews;
+  }
+}
+
+function showAllReviews() {
+  const all = window._allReviewsCache || [];
+  const grid = document.getElementById('reviews-grid');
+  if (!grid) return;
+
+  // Re-render without slicing, remove button
+  const btn = document.getElementById('show-all-reviews-btn');
+  if (btn) btn.remove();
+
+  // append remaining cards
+  const remaining = all.slice(3);
+  remaining.forEach(r => {
+    const stars = '★'.repeat(r.stars) + '☆'.repeat(5 - r.stars);
+    const city = r.reviewerCity ? escapeHtml(r.reviewerCity) : '';
+    const card = document.createElement('div');
+    card.className = 'review-card';
+    card.innerHTML = `
+      <div class="stars">${stars}</div>
+      <p class="review-text">${escapeHtml(r.text)}</p>
+      <div class="reviewer">
+        <div class="reviewer-avatar">${getInitials(r.reviewerName)}</div>
+        <div class="reviewer-info">
+          <div class="name">${escapeHtml(r.reviewerName)}</div>
+          ${city ? `<div class="location">${city}</div>` : ''}
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
 }
 
 function initReviewForm() {
@@ -459,8 +504,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if (document.getElementById('reviews-grid')) {
     renderReviewSkeletons('reviews-grid', 3);
-    Api.getReviews().then(r => renderReviews(r))
-      .catch(err => console.error('reviews load failed', err));
+    Api.getReviews().then(r => {
+      renderReviews(r.slice(0, 3), r);
+    }).catch(err => console.error('reviews load failed', err));
   }
 
   initBookingForm();
