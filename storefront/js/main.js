@@ -18,7 +18,7 @@
    in the corner of the page is unaffected — it's controlled by the
    #sidebar-mower element existing in the page markup, independently.
    ===================== */
-const SHOW_NAV_MOWER = false;
+const SHOW_NAV_MOWER = true;
 
 /* =====================
    STICKY SIDEBAR + NAVBAR MOWER ANIMATION  (unchanged, purely visual)
@@ -479,7 +479,7 @@ function renderHomeReviews(reviews) {
 
   const filtered = reviews
     .filter(r => r.stars >= 4)
-    .slice(0, 4);
+    .slice(0, 3);
 
   if (!filtered.length) {
     grid.innerHTML = '<div style="color:var(--text-light);text-align:center;padding:40px;grid-column:1/-1">No reviews yet — be the first!</div>';
@@ -490,16 +490,16 @@ function renderHomeReviews(reviews) {
     const stars = '★'.repeat(r.stars) + '☆'.repeat(5 - r.stars);
     const city = r.reviewerCity ? escapeHtml(r.reviewerCity) : '';
     return `
-      <div class="review-card">
-        <div class="stars">${stars}</div>
-        <p class="review-text">"${escapeHtml(r.text)}"</p>
-        <div class="reviewer">
-          <div class="reviewer-avatar">${getInitials(r.reviewerName)}</div>
-          <div class="reviewer-info">
-            <div class="name">${escapeHtml(r.reviewerName)}</div>
-            ${city ? `<div class="location">${city}</div>` : ''}
+        <div class="review-card">
+          <div class="stars">${stars}</div>
+          <p class="review-text">"${escapeHtml(r.text)}"</p>
+          <div class="reviewer">
+            <div class="reviewer-avatar">${getInitials(r.reviewerName)}</div>
+            <div class="reviewer-info">
+              <div class="name">${escapeHtml(r.reviewerName)}</div>
+              ${city ? `<div class="location">${city}</div>` : ''}
+            </div>
           </div>
-        </div>
-      </div>`;
+        </div>`;
   }).join('');
 }
