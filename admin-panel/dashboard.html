@@ -477,34 +477,33 @@
       </div>
     </div>
   </div>
-  2. The Universal Deletion HTML Modal StructureAppend this block of code right before the closing
-</body> tag of your HTML structure. It aligns with your GreenCut design system definitions (using your exact variables
-like --forest-800 and --red). HTML<!-- ── CUSTOM DELETION & FLOW MODAL ── -->
-<div class="modal-overlay" id="gc-delete-modal">
-  <div class="modal-box" style="max-width: 400px; text-align: center; padding: 40px 24px;">
-    <!-- Close action explicitly disabled during execution states to prevent breaking states -->
-    <button class="modal-close" id="delete-modal-close" onclick="closeDeleteModal()">✕</button>
+  <div class="modal-overlay" id="gc-delete-modal">
+    <div class="modal-box" style="max-width: 400px; text-align: center; padding: 40px 24px;">
+      <!-- Close action explicitly disabled during execution states to prevent breaking states -->
+      <button class="modal-close" id="delete-modal-close" onclick="closeDeleteModal()">✕</button>
 
-    <!-- Status Icon/Graphic Wrapper -->
-    <div id="delete-modal-icon-wrap"
-      style="margin-bottom: 20px; display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 50%;">
-      <!-- Icon gets dynamically inserted by Javascript -->
-    </div>
+      <!-- Status Icon/Graphic Wrapper -->
+      <div id="delete-modal-icon-wrap"
+        style="margin-bottom: 20px; display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 50%;">
+        <!-- Icon gets dynamically inserted by Javascript -->
+      </div>
 
-    <h3 class="modal-title" id="delete-modal-title" style="margin-bottom: 8px; font-size: 1.25rem;">Confirm Action</h3>
-    <p id="delete-modal-desc" style="font-size: 0.9rem; color: var(--ink-600); line-height: 1.5; margin-bottom: 28px;">
-      Are you sure you want to proceed? This step cannot be undone.
-    </p>
+      <h3 class="modal-title" id="delete-modal-title" style="margin-bottom: 8px; font-size: 1.25rem;">Confirm Action
+      </h3>
+      <p id="delete-modal-desc"
+        style="font-size: 0.9rem; color: var(--ink-600); line-height: 1.5; margin-bottom: 28px;">
+        Are you sure you want to proceed? This step cannot be undone.
+      </p>
 
-    <!-- Action Bar Container -->
-    <div id="delete-modal-actions" style="display: flex; gap: 12px; justify-content: center;">
-      <button class="btn btn-ghost btn-sm" onclick="closeDeleteModal()"
-        style="border-radius: 40px; padding: 9px 24px;">Cancel</button>
-      <button class="btn btn-sm" id="delete-modal-confirm-btn"
-        style="background: var(--red); color: #fff; border-radius: 40px; padding: 9px 24px;">Delete</button>
+      <!-- Action Bar Container -->
+      <div id="delete-modal-actions" style="display: flex; gap: 12px; justify-content: center;">
+        <button class="btn btn-ghost btn-sm" onclick="closeDeleteModal()"
+          style="border-radius: 40px; padding: 9px 24px;">Cancel</button>
+        <button class="btn btn-sm" id="delete-modal-confirm-btn"
+          style="background: var(--red); color: #fff; border-radius: 40px; padding: 9px 24px;">Delete</button>
+      </div>
     </div>
   </div>
-</div>
 </body>
 
 </html>
