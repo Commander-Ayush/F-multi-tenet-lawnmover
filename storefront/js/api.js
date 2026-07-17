@@ -10,7 +10,7 @@
    send a company id from here. See CONTRACT.md for the full spec.
 */
 
-const API_BASE = "https://growthmultiplier.online";
+const API_BASE = "http://localhost:8080"; // ← change this once, to your VPS's address, when going live
 
 async function apiGet(path) {
   const res = await fetch(API_BASE + path);
@@ -62,4 +62,17 @@ const Api = {
 
   // POST /reviews  body: { reviewerName, reviewerCity, stars, text }
   submitReview: (payload) => apiPost("/reviews", payload),
+
+  // GET /products  -> [ { id, sku, name, brand, category, image, price,
+  //                        originalPrice, badge, stock, spec, description } ]
+  // category is one of: "push-mower" | "riding-mower" | "robotic-mower" |
+  //                      "trimmer" | "blower" | "accessory"
+  // stock is one of: "in-stock" | "low-stock" | "out-of-stock"
+  getProducts: () => apiGet("/products"),
+
+  // POST /orders  body: { firstName, lastName, email, phone, fulfillment,
+  //                         address, preferredDate, notes,
+  //                         items: [ { productId, quantity } ] }
+  // fulfillment is "pickup" or "delivery" — address only required for delivery.
+  submitOrder: (payload) => apiPost("/orders", payload),
 };

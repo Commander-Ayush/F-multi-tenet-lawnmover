@@ -215,46 +215,6 @@ button {
   display: none;
 }
 
-.badge.completing {
-  background: #FEF3C7;
-  color: #92400E;
-}
-
-.badge.reopening {
-  background: #EDE9FE;
-  color: #5B21B6;
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-#bookings-body td:nth-last-child(2) {
-  width: 110px;
-}
-
-#bookings-body td:last-child {
-  width: 160px;
-  white-space: nowrap;
-}
-
-.action-btn {
-  min-width: 80px;
-  text-align: center;
-}
-
-.badge-spinner {
-  display: inline-block;
-  animation: spin 0.8s linear infinite;
-  margin-right: 4px;
-}
-
 .sidebar-footer {
   padding: 16px 0;
   border-top: 1px solid rgba(255, 255, 255, .08);
@@ -1006,6 +966,239 @@ td small {
   background: #fff;
   border-radius: var(--radius-lg);
   border: 1px dashed var(--line);
+}
+
+/* ── Product catalog cards (image thumbnail variant) ── */
+.catalog-card-thumb {
+  width: 100%;
+  aspect-ratio: 16/10;
+  border-radius: var(--radius-sm);
+  background: var(--sage-100);
+  margin-bottom: 12px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.catalog-card-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.catalog-card-thumb svg {
+  width: 34px;
+  height: 34px;
+  color: var(--sage-300);
+}
+
+.catalog-card-category {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--moss-500);
+  margin-bottom: 5px;
+}
+
+.catalog-card-stock {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.catalog-card-stock::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.catalog-card-stock.in {
+  color: var(--moss-500);
+}
+
+.catalog-card-stock.out {
+  color: var(--ink-400);
+}
+
+/* ── Category filter chips (products page) ── */
+.chip-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.chip-filter {
+  padding: 7px 15px;
+  border-radius: 999px;
+  border: 1.5px solid var(--line);
+  background: #fff;
+  color: var(--ink-600);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s var(--ease);
+  white-space: nowrap;
+}
+
+.chip-filter:hover {
+  border-color: var(--moss-400);
+  color: var(--forest-800);
+}
+
+.chip-filter.active {
+  background: var(--forest-800);
+  border-color: var(--forest-800);
+  color: #fff;
+}
+
+/* ── Image upload control (product form) ── */
+.image-upload-box {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.image-preview {
+  width: 84px;
+  height: 84px;
+  border-radius: var(--radius);
+  background: var(--sage-100);
+  border: 1.5px dashed var(--line);
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.image-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.image-preview svg {
+  width: 26px;
+  height: 26px;
+  color: var(--sage-300);
+}
+
+.image-upload-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.image-upload-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--line);
+  background: #fff;
+  color: var(--ink-700);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s var(--ease);
+  width: fit-content;
+}
+
+.image-upload-btn:hover {
+  border-color: var(--moss-400);
+  color: var(--forest-800);
+}
+
+.image-upload-status {
+  font-size: 11.5px;
+  color: var(--ink-400);
+}
+
+.image-remove-link {
+  font-size: 11.5px;
+  color: var(--red);
+  cursor: pointer;
+  width: fit-content;
+  background: none;
+  border: none;
+  padding: 0;
+  text-decoration: underline;
+}
+
+/* ── Boolean toggle switch (in stock / out of stock) ── */
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.toggle-row-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-700);
+}
+
+.toggle-row-sub {
+  font-size: 11.5px;
+  color: var(--ink-400);
+  margin-top: 1px;
+}
+
+.toggle-switch {
+  position: relative;
+  width: 44px;
+  height: 25px;
+  flex-shrink: 0;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-switch .toggle-track {
+  position: absolute;
+  inset: 0;
+  background: var(--ink-200);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background .15s var(--ease);
+}
+
+.toggle-switch .toggle-track::before {
+  content: '';
+  position: absolute;
+  width: 19px;
+  height: 19px;
+  left: 3px;
+  top: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform .15s var(--ease);
+  box-shadow: var(--shadow-sm);
+}
+
+.toggle-switch input:checked+.toggle-track {
+  background: var(--moss-500);
+}
+
+.toggle-switch input:checked+.toggle-track::before {
+  transform: translateX(19px);
 }
 
 /* ── Section divider ── */

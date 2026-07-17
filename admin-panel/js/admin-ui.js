@@ -75,12 +75,13 @@ function showPanel(id) {
   const link = document.querySelector(`.admin-nav a[data-panel="${id}"]`);
   if (link) link.classList.add('active');
 
-  const titles = { dashboard: 'Dashboard', bookings: 'Bookings', sales: 'Sales Analytics', reviews: 'Review Moderation' };
+  const titles = { dashboard: 'Dashboard', bookings: 'Bookings', orders: 'Orders', sales: 'Sales Analytics', reviews: 'Review Moderation' };
   const titleEl = document.getElementById('panel-title');
   if (titleEl) titleEl.textContent = titles[id] || 'Admin';
 
   if (id === 'sales') renderSalesCharts();
   if (id === 'reviews') loadReviews();
+  if (id === 'orders') loadOrders();
 }
 
 /* =====================
@@ -198,76 +199,103 @@ function renderBookingsTable(bookings) {
 }
 
 async function handleComplete(id) {
-  const row = document.querySelector(`button.confirm[onclick="handleComplete(${id})"]`)?.closest('tr');
-  if (row) {
-    row.querySelector('td:nth-last-child(2)').innerHTML = '<span class="badge completing"><span class="badge-spinner">↻</span>Completing…</span>';
-    row.querySelector('td:last-child').innerHTML = '<button class="action-btn delete" onclick="handleDelete(' + id + ')">Delete</button>';
-  }
-  try {
-    await AdminApi.completeBooking(id);
-    await loadDashboard();
-    showToast('Booking marked complete.');
-  } catch (err) {
-    await loadDashboard();
-    alert(err.message);
-  }
+  try { await AdminApi.completeBooking(id); await loadDashboard(); showToast('Booking marked complete.'); }
+  catch (err) { alert(err.message); }
 }
-
 async function handleReopen(id) {
-  const row = document.querySelector(`button.reopen[onclick="handleReopen(${id})"]`)?.closest('tr');
-  if (row) {
-    row.querySelector('td:nth-last-child(2)').innerHTML = '<span class="badge reopening"><span class="badge-spinner">↻</span>Reopening…</span>';
-    row.querySelector('td:last-child').innerHTML = '<button class="action-btn delete" onclick="handleDelete(' + id + ')">Delete</button>';
-  }
-  try {
-    await AdminApi.reopenBooking(id);
-    await loadDashboard();
-    showToast('Booking reopened.');
-  } catch (err) {
-    await loadDashboard();
-    alert(err.message);
-  }
+  try { await AdminApi.reopenBooking(id); await loadDashboard(); showToast('Booking reopened.'); }
+  catch (err) { alert(err.message); }
 }
-let _pendingDeleteId = null;
-
-function openDeleteModal(id) {
-  _pendingDeleteId = id;
-  const modal = document.getElementById('delete-modal');
-  modal.style.display = 'flex';
-  document.getElementById('delete-confirm-btn').onclick = confirmDelete;
-}
-
-function closeDeleteModal() {
-  _pendingDeleteId = null;
-  document.getElementById('delete-modal').style.display = 'none';
-  const btn = document.getElementById('delete-confirm-btn');
-  if (btn) { btn.disabled = false; btn.innerHTML = 'Delete'; }
-}
-
-async function confirmDelete() {
-  const id = _pendingDeleteId;
-  if (!id) return;
-  const btn = document.getElementById('delete-confirm-btn');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="badge-spinner">↻</span> Deleting…';
-  try {
-    await AdminApi.deleteBooking(id);
-    closeDeleteModal();
-    await loadDashboard();
-    showToast('Booking deleted.');
-  } catch (err) {
-    btn.disabled = false;
-    btn.innerHTML = 'Delete';
-    alert(err.message);
-  }
-}
-
 async function handleDelete(id) {
-  openDeleteModal(id);
+  if (!confirm('Delete this booking? This cannot be undone.')) return;
+  try { await AdminApi.deleteBooking(id); await loadDashboard(); showToast('Booking deleted.'); }
+  catch (err) { alert(err.message); }
 }
 
 function filterBookings(query) {
   const tbody = document.getElementById('bookings-body');
+  if (!tbody) return;
+  const q = query.trim().toLowerCase();
+  tbody.querySelectorAll('tr[data-row]').forEach(row => {
+    row.style.display = !q || (row.dataset.search || '').includes(q) ? '' : 'none';
+  });
+}
+
+/* =====================
+   ORDERS PANEL (equipment purchase requests)
+   ===================== */
+let _allOrders = [];
+
+async function loadOrders() {
+  const tbody = document.getElementById('orders-body');
+  if (!tbody) return;
+  tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:var(--ink-400);padding:40px">Loading…</td></tr>`;
+  try {
+    _allOrders = await AdminApi.getOrders();
+    renderOrdersTable(_allOrders);
+
+    const pendingCount = _allOrders.filter(o => !o.completed).length;
+    const badge = document.getElementById('orders-badge');
+    if (badge) {
+      badge.textContent = pendingCount;
+      badge.style.display = pendingCount > 0 ? 'inline-block' : 'none';
+    }
+  } catch (err) {
+    console.error('orders load failed', err);
+    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:var(--ink-400);padding:40px">Failed to load orders.</td></tr>`;
+  }
+}
+
+function summarizeOrderItems(order) {
+  const items = order.items || [];
+  if (!items.length) return '—';
+  const first = items[0];
+  const label = `${escapeHtml(first.productName || first.name || 'Item')} × ${first.quantity}`;
+  return items.length > 1 ? `${label} <small>+${items.length - 1} more</small>` : label;
+}
+
+function renderOrdersTable(orders) {
+  const tbody = document.getElementById('orders-body');
+  if (!tbody) return;
+  if (!orders.length) {
+    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:var(--ink-400);padding:40px">No orders yet.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = orders.map(o => `
+    <tr data-row data-search="${escapeHtml((o.firstName + ' ' + o.lastName + ' ' + (o.email || '') + ' ' + o.phone + ' ' + o.id).toLowerCase())}">
+      <td><strong>#${o.id}</strong></td>
+      <td>${escapeHtml(o.firstName + ' ' + o.lastName)}<br/><small>${escapeHtml(o.email || '')}</small></td>
+      <td><a href="tel:${o.phone}">${escapeHtml(o.phone)}</a></td>
+      <td style="max-width:220px">${summarizeOrderItems(o)}</td>
+      <td>${o.fulfillment === 'delivery' ? 'Delivery' : 'Pickup'}${o.fulfillment === 'delivery' && o.address ? `<br/><small>${escapeHtml(o.address)}</small>` : ''}</td>
+      <td>${o.preferredDate || '—'}</td>
+      <td>${o.submittedAt ? new Date(o.submittedAt).toLocaleString() : '—'}</td>
+      <td>${statusBadge(o.completed)}</td>
+      <td style="white-space:nowrap">
+        ${o.completed
+      ? `<button class="action-btn reopen" onclick="handleReopenOrder(${o.id})" title="Reopen">↺ Reopen</button>`
+      : `<button class="action-btn confirm" onclick="handleFulfillOrder(${o.id})" title="Mark fulfilled">✓ Fulfilled</button>`}
+        <button class="action-btn delete" onclick="handleDeleteOrder(${o.id})" title="Delete">Delete</button>
+      </td>
+    </tr>`).join('');
+}
+
+async function handleFulfillOrder(id) {
+  try { await AdminApi.fulfillOrder(id); await loadOrders(); showToast('Order marked fulfilled.'); }
+  catch (err) { alert(err.message); }
+}
+async function handleReopenOrder(id) {
+  try { await AdminApi.reopenOrder(id); await loadOrders(); showToast('Order reopened.'); }
+  catch (err) { alert(err.message); }
+}
+async function handleDeleteOrder(id) {
+  if (!confirm('Delete this order? This cannot be undone.')) return;
+  try { await AdminApi.deleteOrder(id); await loadOrders(); showToast('Order deleted.'); }
+  catch (err) { alert(err.message); }
+}
+
+function filterOrders(query) {
+  const tbody = document.getElementById('orders-body');
   if (!tbody) return;
   const q = query.trim().toLowerCase();
   tbody.querySelectorAll('tr[data-row]').forEach(row => {
@@ -444,7 +472,193 @@ async function submitItemForm(e) {
 }
 
 /* =====================
-    REVIEWS PANEL
+   PRODUCTS PAGE (Shop & Products)
+   ===================== */
+const PRODUCT_CATEGORY_LABELS = {
+  'push-mower': 'Push Mowers',
+  'riding-mower': 'Riding Mowers',
+  'robotic-mower': 'Robotic Mowers',
+  'trimmer': 'Trimmers & Edgers',
+  'blower': 'Blowers & Vacuums',
+  'accessory': 'Parts & Accessories',
+};
+
+let _productCatalog = [];
+let _activeProductCategory = 'all';
+
+async function loadProductCatalog() {
+  const grid = document.getElementById('products-grid');
+  if (!grid) return;
+  try {
+    _productCatalog = await AdminApi.getProducts();
+    renderProductCategoryChips();
+    renderProductGrid();
+  } catch (err) {
+    console.error('product catalog load failed', err);
+    grid.innerHTML = '<div class="catalog-empty">Failed to load products.</div>';
+  }
+}
+
+function renderProductCategoryChips() {
+  const wrap = document.getElementById('product-category-filters');
+  if (!wrap) return;
+  const present = new Set(_productCatalog.map(p => p.category));
+  const chips = [{ key: 'all', label: 'All Products' }]
+    .concat(Object.keys(PRODUCT_CATEGORY_LABELS).filter(k => present.has(k)).map(k => ({ key: k, label: PRODUCT_CATEGORY_LABELS[k] })));
+
+  wrap.innerHTML = chips.map(c =>
+    `<button type="button" class="chip-filter ${c.key === _activeProductCategory ? 'active' : ''}" data-category="${c.key}">${c.label}</button>`
+  ).join('');
+
+  wrap.querySelectorAll('.chip-filter').forEach(chip => {
+    chip.addEventListener('click', () => {
+      _activeProductCategory = chip.dataset.category;
+      wrap.querySelectorAll('.chip-filter').forEach(c => c.classList.toggle('active', c === chip));
+      renderProductGrid();
+    });
+  });
+}
+
+function renderProductGrid() {
+  const grid = document.getElementById('products-grid');
+  if (!grid) return;
+
+  const items = _activeProductCategory === 'all'
+    ? _productCatalog
+    : _productCatalog.filter(p => p.category === _activeProductCategory);
+
+  if (!items.length) {
+    grid.innerHTML = '<div class="catalog-empty">No products yet — add your first one above.</div>';
+    return;
+  }
+
+  grid.innerHTML = items.map(p => `
+    <div class="catalog-card">
+      <div class="catalog-card-thumb">
+        ${p.image
+      ? `<img src="${p.image}" alt="${escapeHtml(p.name)}">`
+      : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="9" width="14" height="8" rx="1"/><path d="M15 12h4l3 3v2h-7"/><circle cx="6" cy="19" r="1.6"/><circle cx="17.5" cy="19" r="1.6"/></svg>`}
+      </div>
+      <div class="catalog-card-category">${escapeHtml(PRODUCT_CATEGORY_LABELS[p.category] || p.category || '')}</div>
+      <div class="catalog-card-name">
+        ${escapeHtml(p.name)}
+        ${p.badge ? `<span class="catalog-card-featured">${escapeHtml(p.badge)}</span>` : ''}
+      </div>
+      <div class="catalog-card-desc">${escapeHtml(p.spec || p.description || '')}</div>
+      <div class="catalog-card-stock ${p.inStock === false ? 'out' : 'in'}">${p.inStock === false ? 'Out of Stock' : 'In Stock'}</div>
+      <div class="catalog-card-price">${escapeHtml(p.price || '')}</div>
+      <div class="catalog-card-actions">
+        <button class="action-btn edit" onclick="openEditProduct(${p.id})">Edit</button>
+        <button class="action-btn delete" onclick="handleDeleteProduct(${p.id})">Delete</button>
+      </div>
+    </div>`).join('');
+}
+
+async function handleDeleteProduct(id) {
+  if (!confirm('Delete this product? This cannot be undone.')) return;
+  try { await AdminApi.deleteProduct(id); await loadProductCatalog(); showToast('Product deleted.'); }
+  catch (err) { alert(err.message); }
+}
+
+/* ── Add / Edit product modal ── */
+function resetProductImageUI(imageUrl) {
+  document.getElementById('product-image-url').value = imageUrl || '';
+  const preview = document.getElementById('product-image-preview');
+  const removeBtn = document.getElementById('product-image-remove');
+  const status = document.getElementById('product-image-status');
+  if (imageUrl) {
+    preview.innerHTML = `<img src="${imageUrl}" alt="">`;
+    removeBtn.style.display = 'block';
+    status.textContent = 'Photo set';
+  } else {
+    preview.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1" y="9" width="14" height="8" rx="1"/><path d="M15 12h4l3 3v2h-7"/><circle cx="6" cy="19" r="1.6"/><circle cx="17.5" cy="19" r="1.6"/></svg>`;
+    removeBtn.style.display = 'none';
+    status.textContent = 'JPG or PNG, up to ~5MB';
+  }
+}
+
+function openAddProduct() {
+  setText('product-modal-eyebrow', 'Create');
+  setText('product-modal-title', 'Add Product');
+  document.getElementById('product-form').reset();
+  document.getElementById('product-edit-id').value = '';
+  document.getElementById('product-in-stock').checked = true;
+  resetProductImageUI('');
+  document.getElementById('product-modal').classList.add('open');
+}
+
+function openEditProduct(id) {
+  const item = _productCatalog.find(p => p.id === id);
+  if (!item) { alert('Could not find that product — try refreshing.'); return; }
+  setText('product-modal-eyebrow', 'Edit  #' + item.id);
+  setText('product-modal-title', 'Edit Product');
+  document.getElementById('product-edit-id').value = item.id;
+  document.getElementById('product-name').value = item.name || '';
+  document.getElementById('product-brand').value = item.brand || '';
+  document.getElementById('product-category').value = item.category || 'push-mower';
+  document.getElementById('product-price').value = item.price || '';
+  document.getElementById('product-original-price').value = item.originalPrice || '';
+  document.getElementById('product-badge').value = item.badge || '';
+  document.getElementById('product-spec').value = item.spec || '';
+  document.getElementById('product-description').value = item.description || '';
+  document.getElementById('product-in-stock').checked = item.inStock !== false;
+  resetProductImageUI(item.image || '');
+  document.getElementById('product-modal').classList.add('open');
+}
+
+async function handleProductImageChosen(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const preview = document.getElementById('product-image-preview');
+  const status = document.getElementById('product-image-status');
+  const saveBtn = document.getElementById('product-save-btn');
+
+  // Show an instant local preview while the real upload happens in the background.
+  const localUrl = URL.createObjectURL(file);
+  preview.innerHTML = `<img src="${localUrl}" alt="">`;
+  status.textContent = 'Uploading…';
+  if (saveBtn) saveBtn.disabled = true;
+
+  try {
+    const uploadedUrl = await uploadImageToCloudinary(file);
+    document.getElementById('product-image-url').value = uploadedUrl;
+    document.getElementById('product-image-remove').style.display = 'block';
+    status.textContent = 'Photo set';
+  } catch (err) {
+    status.textContent = err.message || 'Upload failed — try again.';
+    resetProductImageUI(document.getElementById('product-image-url').value);
+  } finally {
+    if (saveBtn) saveBtn.disabled = false;
+  }
+}
+
+async function submitProductForm(e) {
+  e.preventDefault();
+  const editId = document.getElementById('product-edit-id').value;
+  const payload = {
+    name: document.getElementById('product-name').value,
+    brand: document.getElementById('product-brand').value,
+    category: document.getElementById('product-category').value,
+    price: document.getElementById('product-price').value,
+    originalPrice: document.getElementById('product-original-price').value || null,
+    badge: document.getElementById('product-badge').value || null,
+    spec: document.getElementById('product-spec').value,
+    description: document.getElementById('product-description').value,
+    image: document.getElementById('product-image-url').value || null,
+    inStock: document.getElementById('product-in-stock').checked,
+  };
+  try {
+    if (editId) await AdminApi.editProduct(editId, payload);
+    else await AdminApi.addProduct(payload);
+    closeModal('product-modal');
+    await loadProductCatalog();
+    showToast(editId ? 'Product updated.' : 'Product added.');
+  } catch (err) { alert(err.message); }
+}
+
+/* =====================
+   REVIEWS PANEL
    ===================== */
 let _allReviews = [];
 
@@ -512,9 +726,11 @@ async function handleDeleteReview(id) {
     await loadReviews();
     showToast('Review deleted.');
   } catch (err) { alert(err.message); }
-}/* =====================
-SHARED HELPERS
-===================== */
+}
+
+/* =====================
+   SHARED HELPERS
+   ===================== */
 function escapeHtml(str) {
   const div = document.createElement('div');
   div.textContent = str == null ? '' : String(str);
@@ -522,25 +738,94 @@ function escapeHtml(str) {
 }
 
 /* =====================
-CHANGE PASSWORD MODAL
-===================== */
+   INIT
+   ===================== */
+document.addEventListener('DOMContentLoaded', () => {
+  initLoginForm();
+
+  const isLoginPage = !!document.getElementById('login-form');
+  if (!isLoginPage && !getToken()) { goToLogin(); return; }
+
+  /* Mobile sidebar */
+  const toggle = document.getElementById('sidebar-toggle');
+  const sidebar = document.getElementById('admin-sidebar');
+  if (toggle && sidebar) {
+    toggle.addEventListener('click', () => sidebar.classList.toggle('open'));
+    /* Close sidebar when clicking outside on mobile */
+    document.addEventListener('click', (e) => {
+      if (window.innerWidth <= 768 && sidebar.classList.contains('open')
+        && !sidebar.contains(e.target) && e.target !== toggle) {
+        sidebar.classList.remove('open');
+      }
+    });
+  }
+
+  /* Dashboard page wiring */
+  if (document.getElementById('panel-dashboard')) {
+    document.querySelectorAll('.admin-nav a[data-panel]').forEach(a => {
+      a.addEventListener('click', (e) => { e.preventDefault(); showPanel(a.dataset.panel); });
+    });
+    /* "View all →" link inside dashboard panel */
+    document.querySelectorAll('a[data-panel]').forEach(a => {
+      if (!a.closest('.admin-nav')) {
+        a.addEventListener('click', (e) => { e.preventDefault(); showPanel(a.dataset.panel); });
+      }
+    });
+    showPanel('dashboard');
+    loadDashboard();
+  }
+
+  const bSearch = document.getElementById('booking-search');
+  if (bSearch) bSearch.addEventListener('input', () => filterBookings(bSearch.value));
+
+  const oSearch = document.getElementById('order-search');
+  if (oSearch) oSearch.addEventListener('input', () => filterOrders(oSearch.value));
+
+  /* Services page wiring */
+  if (document.getElementById('services-grid') && document.getElementById('item-form')) {
+    loadServiceCatalog();
+    document.getElementById('item-form').addEventListener('submit', submitItemForm);
+  }
+
+  /* Products page wiring */
+  if (document.getElementById('products-grid') && document.getElementById('product-form')) {
+    loadProductCatalog();
+    document.getElementById('product-form').addEventListener('submit', submitProductForm);
+    document.getElementById('product-image-file').addEventListener('change', handleProductImageChosen);
+    document.getElementById('product-image-remove').addEventListener('click', () => {
+      document.getElementById('product-image-file').value = '';
+      resetProductImageUI('');
+    });
+  }
+
+  /* Logout */
+  const logoutBtn = document.getElementById('logout-btn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => { clearToken(); location.href = 'login.html'; });
+  }
+
+  /* Modal backdrop close */
+  document.querySelectorAll('.modal-overlay').forEach(m => {
+    m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+  });
+
+  /* Date display */
+  const dateEl = document.getElementById('admin-date');
+  if (dateEl) dateEl.textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+});
+/* =====================
+   CHANGE PASSWORD MODAL
+   ===================== */
 function openChangePassword() {
   const modal = document.getElementById('change-password-modal');
   if (!modal) return;
-
   document.getElementById('cp-current').value = '';
   document.getElementById('cp-new').value = '';
   document.getElementById('cp-confirm').value = '';
-
   document.getElementById('cp-error').style.display = 'none';
   document.getElementById('cp-success').style.display = 'none';
-
   const btn = document.getElementById('cp-submit-btn');
-  if (btn) {
-    btn.disabled = false;
-    btn.textContent = 'Update Password';
-  }
-
+  if (btn) { btn.disabled = false; btn.textContent = 'Update Password'; }
   modal.style.display = 'flex';
 }
 
@@ -553,7 +838,6 @@ async function submitChangePassword() {
   const currentPassword = document.getElementById('cp-current').value.trim();
   const newPassword = document.getElementById('cp-new').value.trim();
   const confirmPassword = document.getElementById('cp-confirm').value.trim();
-
   const errorBox = document.getElementById('cp-error');
   const successBox = document.getElementById('cp-success');
   const btn = document.getElementById('cp-submit-btn');
@@ -563,26 +847,19 @@ async function submitChangePassword() {
 
   if (!currentPassword) {
     errorBox.textContent = 'Please enter your current password.';
-    errorBox.style.display = 'block';
-    return;
+    errorBox.style.display = 'block'; return;
   }
-
   if (newPassword.length < 8) {
     errorBox.textContent = 'New password must be at least 8 characters.';
-    errorBox.style.display = 'block';
-    return;
+    errorBox.style.display = 'block'; return;
   }
-
   if (newPassword !== confirmPassword) {
     errorBox.textContent = 'New passwords do not match.';
-    errorBox.style.display = 'block';
-    return;
+    errorBox.style.display = 'block'; return;
   }
-
   if (currentPassword === newPassword) {
     errorBox.textContent = 'New password must be different from your current one.';
-    errorBox.style.display = 'block';
-    return;
+    errorBox.style.display = 'block'; return;
   }
 
   btn.disabled = true;
@@ -590,170 +867,32 @@ async function submitChangePassword() {
 
   try {
     await AdminApi.changePassword(currentPassword, newPassword);
-
-    successBox.textContent = 'Password updated successfully!';
+    successBox.textContent = '✅ Password updated successfully!';
     successBox.style.display = 'block';
-
     document.getElementById('cp-current').value = '';
     document.getElementById('cp-new').value = '';
     document.getElementById('cp-confirm').value = '';
-
-    btn.disabled = false;
     btn.textContent = 'Update Password';
-
-    setTimeout(closeChangePassword, 2000);
-
+    setTimeout(() => closeChangePassword(), 2000);
   } catch (err) {
     errorBox.textContent = err.message || 'Something went wrong. Please try again.';
     errorBox.style.display = 'block';
-
     btn.disabled = false;
     btn.textContent = 'Update Password';
   }
 }
 
-/* =====================
-INIT
-===================== */
+/* Close change password modal on backdrop click */
 document.addEventListener('DOMContentLoaded', () => {
-
-  /* Login page */
-  initLoginForm();
-
-  const isLoginPage = !!document.getElementById('login-form');
-  if (!isLoginPage && !getToken()) {
-    goToLogin();
-    return;
-  }
-
-  /* Change password modal backdrop */
   const cpModal = document.getElementById('change-password-modal');
-  if (cpModal) {
-    cpModal.addEventListener('click', (e) => {
-      if (e.target === cpModal) {
-        closeChangePassword();
-      }
-    });
-  }
-
-  /* Mobile sidebar */
-  const toggle = document.getElementById('sidebar-toggle');
-  const sidebar = document.getElementById('admin-sidebar');
-
-  if (toggle && sidebar) {
-    toggle.addEventListener('click', () => {
-      sidebar.classList.toggle('open');
-    });
-
-    document.addEventListener('click', (e) => {
-      if (
-        window.innerWidth <= 768 &&
-        sidebar.classList.contains('open') &&
-        !sidebar.contains(e.target) &&
-        e.target !== toggle
-      ) {
-        sidebar.classList.remove('open');
-      }
-    });
-  }
-
-  /* Dashboard */
-  if (document.getElementById('panel-dashboard')) {
-
-    document.querySelectorAll('.admin-nav a[data-panel]').forEach(a => {
-      a.addEventListener('click', (e) => {
-        e.preventDefault();
-        showPanel(a.dataset.panel);
-      });
-    });
-
-    document.querySelectorAll('a[data-panel]').forEach(a => {
-      if (!a.closest('.admin-nav')) {
-        a.addEventListener('click', (e) => {
-          e.preventDefault();
-          showPanel(a.dataset.panel);
-        });
-      }
-    });
-
-    showPanel('dashboard');
-    loadDashboard();
-  }
-
-  /* Booking search */
-  const bSearch = document.getElementById('booking-search');
-  if (bSearch) {
-    bSearch.addEventListener('input', () => {
-      filterBookings(bSearch.value);
-    });
-  }
-
-  /* Services */
-  if (
-    document.getElementById('services-grid') &&
-    document.getElementById('item-form')
-  ) {
-    loadServiceCatalog();
-    document.getElementById('item-form').addEventListener('submit', submitItemForm);
-  }
-
-  /* Logout */
-  const logoutBtn = document.getElementById('logout-btn');
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', () => {
-      clearToken();
-      location.href = 'login.html';
-    });
-  }
-
-  /* Generic modal backdrop */
-  document.querySelectorAll('.modal-overlay').forEach(m => {
-    m.addEventListener('click', e => {
-      if (e.target === m) {
-        m.classList.remove('open');
-      }
-    });
-  });
-
-  /* Date */
-  const dateEl = document.getElementById('admin-date');
-  if (dateEl) {
-    dateEl.textContent = new Date().toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  }
-
+  if (cpModal) cpModal.addEventListener('click', e => { if (e.target === cpModal) closeChangePassword(); });
 });
-/* =====================
-PASSWORD VISIBILITY TOGGLE
-===================== */
-function toggleCpField(inputId, buttonEl) {
+function toggleCpField(inputId, btn) {
   const input = document.getElementById(inputId);
   if (!input) return;
-
-  const svg = buttonEl.querySelector('.eye-icon');
-
-  if (input.type === 'password') {
-    // Switch to visible text
-    input.type = 'text';
-
-    // Optional: Visually update the SVG icon to look "slashed" or closed when password is shown
-    if (svg) {
-      svg.style.color = 'var(--forest-800)'; // Change color to show it's active
-      // Adds a visual slash line across the eye dynamically
-      svg.innerHTML += '<line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" stroke-width="1.6" class="eye-slash-line" />';
-    }
-  } else {
-    // Switch back to dots
-    input.type = 'password';
-
-    if (svg) {
-      svg.style.color = '#9ca3af'; // Reset color
-      const slash = svg.querySelector('.eye-slash-line');
-      if (slash) slash.remove(); // Remove the slash line
-    }
-  }
+  const isHidden = input.type === 'password';
+  input.type = isHidden ? 'text' : 'password';
+  btn.querySelector('svg').innerHTML = isHidden
+    ? '<path d="M3 3l18 18"/><path d="M10.6 5.2A10.6 10.6 0 0 1 12 5c7 0 10.5 7 10.5 7a13.5 13.5 0 0 1-3.15 4.15M6.5 6.6C3.6 8.4 1.5 12 1.5 12s3.5 7 10.5 7c1.6 0 3-.3 4.25-.85"/><path d="M9.5 9.9a3.2 3.2 0 0 0 4.6 4.5"/>'
+    : '<path d="M1.5 12S5 5 12 5s10.5 7 10.5 7-3.5 7-10.5 7S1.5 12 1.5 12Z"/><circle cx="12" cy="12" r="3.2"/>';
 }

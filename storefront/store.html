@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{companyName} — Shop Equipment</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <div id="gc-toast" class="toast"></div>
+
+  <div id="sidebar-mower">
+    <img src="lawnmover.png" alt="Lawn Mower">
+    <div id="mower-trail"></div>
+  </div>
+
+  <nav id="navbar">
+    <div class="nav-inner">
+      <a class="nav-logo" href="index.html"><span class="logo-mark"><svg width="14" height="14" viewBox="0 0 24 24"
+            fill="none" stroke="#EEF3EE" stroke-width="1.8">
+            <path d="M4 20c3-6 5-9 8-9s5 3 8 9" />
+            <circle cx="12" cy="7" r="3" />
+          </svg></span> <span data-bind="name">GreenCut</span></a>
+      <button class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="services.html">Services & Pricing</a></li>
+        <li><a href="store.html">Shop</a></li>
+        <li><a href="reviews.html">Reviews</a></li>
+        <li><a href="booking.html" class="nav-cta">Book Now</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <h1>Shop Lawn Equipment</h1>
+    <p>Professional-grade mowers and yard tools — the same gear our own crews run, available to take home.</p>
+  </div>
+
+  <!-- TRUST STRIP -->
+  <div style="background:var(--green-pale);padding:20px 28px">
+    <div
+      style="max-width:1000px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:center;gap:28px;text-align:center">
+      <div style="display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:600;color:var(--green-dark)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round">
+          <rect x="1" y="9" width="14" height="8" rx="1" />
+          <path d="M15 12h4l3 3v2h-7" />
+          <circle cx="6" cy="19" r="1.6" />
+          <circle cx="17.5" cy="19" r="1.6" />
+        </svg>
+        Free Local Delivery
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:600;color:var(--green-dark)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4Z" />
+        </svg>
+        Manufacturer Warranty
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:600;color:var(--green-dark)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path
+            d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+        </svg>
+        Free Setup & Tune-Up
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:600;color:var(--green-dark)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 6 9 17l-5-5" />
+        </svg>
+        Trade-Ins Accepted
+      </div>
+    </div>
+  </div>
+
+  <!-- PRODUCT CATALOG -->
+  <div class="section">
+    <div class="centered">
+      <span class="section-tag">Equipment For Sale</span>
+      <h2 class="section-heading">Take the crew's gear home</h2>
+      <p class="section-sub">Buy the same mowers, trimmers, and blowers we use on your lawn — serviced, tested, and
+        backed by local support if anything ever needs a tune-up.</p>
+    </div>
+
+    <div class="category-tabs" id="category-tabs">
+      <!-- populated live by initCategoryTabs() once products load -->
+    </div>
+
+    <div class="product-grid" id="products-grid">
+      <div class="skel-product">
+        <div class="skel-img"></div>
+        <div class="skel-body">
+          <div class="skel-block skel-line w-40" style="margin-bottom:12px"></div>
+          <div class="skel-block skel-line w-90" style="margin-bottom:10px"></div>
+          <div class="skel-block skel-line w-60"></div>
+        </div>
+      </div>
+      <div class="skel-product">
+        <div class="skel-img"></div>
+        <div class="skel-body">
+          <div class="skel-block skel-line w-40" style="margin-bottom:12px"></div>
+          <div class="skel-block skel-line w-90" style="margin-bottom:10px"></div>
+          <div class="skel-block skel-line w-60"></div>
+        </div>
+      </div>
+      <div class="skel-product">
+        <div class="skel-img"></div>
+        <div class="skel-body">
+          <div class="skel-block skel-line w-40" style="margin-bottom:12px"></div>
+          <div class="skel-block skel-line w-90" style="margin-bottom:10px"></div>
+          <div class="skel-block skel-line w-60"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stripe-divider"></div>
+
+  <!-- WHY BUY FROM US -->
+  <div class="bg-pale" style="padding:72px 28px">
+    <div class="section" style="padding:0">
+      <div class="centered">
+        <span class="section-tag">Why Buy Here</span>
+        <h2 class="section-heading">Not just a warehouse — real local support</h2>
+        <p class="section-sub">Order online from a big box store and you're on your own. Buy from
+          <span data-bind="name">GreenCut</span> and you get a crew down the street who already knows your yard.
+        </p>
+      </div>
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path
+                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+            </svg>
+          </div>
+          <h3>Local Service, Not a Call Center</h3>
+          <p>Warranty issue or a jammed blade? Call the same crew that services lawns in your neighborhood — no
+            shipping it back, no waiting on hold.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4Z" />
+            </svg>
+          </div>
+          <h3>Every Unit Pre-Serviced</h3>
+          <p>Nothing ships or leaves our shop without a full pre-delivery inspection: oil, blades, belts, and a test
+            run — so it's ready to work on day one.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M20 6 9 17l-5-5" />
+            </svg>
+          </div>
+          <h3>Trade-In Toward a Plan</h3>
+          <p>Bring in your old equipment when you sign up for a mowing plan and we'll knock the trade-in value off
+            your first month.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHECKOUT -->
+  <div class="section" id="checkout-section">
+    <div class="centered" style="margin-bottom:12px">
+      <span class="section-tag">Ready to Buy</span>
+      <h2 class="section-heading">Request Your Order</h2>
+      <p class="section-sub">Add items to your cart above, then submit your details here. We'll confirm pricing,
+        availability, and pickup or delivery within 24 hours — no payment is taken online.</p>
+    </div>
+
+    <div class="form-container" style="margin-top:44px">
+
+      <div id="checkout-form-wrap">
+        <div class="form-card">
+
+          <div class="order-summary" id="order-summary">
+            <h4>Your Order</h4>
+            <div id="order-summary-body">
+              <p style="color:var(--text-light);font-size:.9rem">Your cart is empty — add equipment above before
+                checking out.</p>
+            </div>
+          </div>
+
+          <form id="checkout-form">
+            <div class="form-grid">
+
+              <div class="form-group">
+                <label for="order-firstName">First Name <span style="color:var(--red-mower)">*</span></label>
+                <input type="text" id="order-firstName" name="firstName" placeholder="Jane" required>
+              </div>
+
+              <div class="form-group">
+                <label for="order-lastName">Last Name <span style="color:var(--red-mower)">*</span></label>
+                <input type="text" id="order-lastName" name="lastName" placeholder="Doe" required>
+              </div>
+
+              <div class="form-group">
+                <label for="order-email">Email Address</label>
+                <input type="email" id="order-email" name="email" placeholder="jane@email.com">
+              </div>
+
+              <div class="form-group">
+                <label for="order-phone">Phone Number <span style="color:var(--red-mower)">*</span></label>
+                <input type="tel" id="order-phone" name="phone" placeholder="(555) 000-0000" required>
+              </div>
+
+              <div class="form-group full">
+                <label>Pickup or Delivery <span style="color:var(--red-mower)">*</span></label>
+                <div class="fulfillment-toggle">
+                  <label class="fulfillment-option selected">
+                    <input type="radio" name="fulfillment" value="pickup" checked>
+                    <span>Pickup at our shop</span>
+                  </label>
+                  <label class="fulfillment-option">
+                    <input type="radio" name="fulfillment" value="delivery">
+                    <span>Local delivery</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-group full" id="delivery-address-group" style="display:none">
+                <label for="order-address">Delivery Address</label>
+                <input type="text" id="order-address" name="address" placeholder="123 Main St, Springfield, IL 62701">
+              </div>
+
+              <div class="form-group">
+                <label for="order-pref-date">Preferred Pickup/Delivery Date</label>
+                <input type="date" id="order-pref-date" name="pref_date">
+              </div>
+
+              <div class="form-group full">
+                <label for="order-notes">Additional Notes</label>
+                <textarea id="order-notes" name="notes" rows="4"
+                  placeholder="Financing questions, trade-in details, or anything else we should know…"></textarea>
+              </div>
+
+            </div>
+
+            <div class="form-submit">
+              <button type="submit" class="btn btn-green" style="font-size:1.05rem;padding:14px 42px">
+                Submit Order Request
+              </button>
+            </div>
+            <p class="form-note">This reserves your equipment — no payment is charged online. We'll call to confirm
+              final pricing and arrange payment at pickup or delivery.</p>
+          </form>
+        </div>
+      </div>
+
+      <!-- SUCCESS STATE -->
+      <div id="order-success-msg" class="success-msg">
+        <div class="check-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 6 9 17l-5-5" />
+          </svg></div>
+        <h2 style="margin-top:16px">Order Request Submitted</h2>
+        <p>Thanks! We've received your request and will call or email within 24 hours to confirm pricing and
+          arrange pickup or delivery.</p>
+        <div style="margin-top:24px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+          <a href="index.html" class="btn btn-green">Back to Home</a>
+          <a href="store.html" class="btn btn-outline" style="color:var(--green-dark);border-color:var(--green-main)">
+            Keep Browsing
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="bg-pale" style="padding:72px 28px">
+    <div class="section" style="padding:0">
+      <div class="centered" style="margin-bottom:44px">
+        <span class="section-tag">Got Questions?</span>
+        <h2 class="section-heading">Buying Equipment — FAQ</h2>
+      </div>
+      <div style="max-width:740px;margin:0 auto;display:flex;flex-direction:column;gap:18px">
+
+        <details
+          style="background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 22px;cursor:pointer">
+          <summary
+            style="font-weight:700;font-size:1rem;color:var(--text-dark);list-style:none;display:flex;justify-content:space-between;align-items:center">
+            Do you offer financing? <span style="color:var(--green-main)">+</span>
+          </summary>
+          <p style="margin-top:12px;color:var(--text-light);line-height:1.7;font-size:.95rem">We can point you to
+            financing options for larger purchases like riding mowers — mention it in the notes field when you
+            submit your order and we'll go over it on the confirmation call.</p>
+        </details>
+
+        <details
+          style="background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 22px;cursor:pointer">
+          <summary
+            style="font-weight:700;font-size:1rem;color:var(--text-dark);list-style:none;display:flex;justify-content:space-between;align-items:center">
+            What's covered under warranty? <span style="color:var(--green-main)">+</span>
+          </summary>
+          <p style="margin-top:12px;color:var(--text-light);line-height:1.7;font-size:.95rem">Every unit carries its
+            full manufacturer warranty, and we handle warranty service locally instead of you having to ship
+            anything back.</p>
+        </details>
+
+        <details
+          style="background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 22px;cursor:pointer">
+          <summary
+            style="font-weight:700;font-size:1rem;color:var(--text-dark);list-style:none;display:flex;justify-content:space-between;align-items:center">
+            How far does local delivery reach? <span style="color:var(--green-main)">+</span>
+          </summary>
+          <p style="margin-top:12px;color:var(--text-light);line-height:1.7;font-size:.95rem">Delivery covers
+            <span data-bind="city">our service area</span> and the surrounding neighborhoods. If you're outside that
+            range, pickup at our shop is always free.</p>
+        </details>
+
+        <details
+          style="background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 22px;cursor:pointer">
+          <summary
+            style="font-weight:700;font-size:1rem;color:var(--text-dark);list-style:none;display:flex;justify-content:space-between;align-items:center">
+            Can I trade in my old mower? <span style="color:var(--green-main)">+</span>
+          </summary>
+          <p style="margin-top:12px;color:var(--text-light);line-height:1.7;font-size:.95rem">Yes — bring it along
+            when you pick up your new equipment, or mention it in your order notes and we'll appraise it ahead of
+            time.</p>
+        </details>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM CTA -->
+  <div style="background:var(--green-dark);color:#fff;padding:56px 28px;text-align:center">
+    <h2 style="font-size:clamp(1.6rem,3vw,2.3rem);margin-bottom:12px">Not sure which machine fits your yard?</h2>
+    <p style="opacity:.82;margin-bottom:28px">Call us at <strong data-bind="phone">(800) 473-6288</strong> and we'll
+      help you pick the right equipment — free of charge, no pressure.</p>
+    <a href="#checkout-section" class="btn btn-primary">Jump to Checkout</a>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="logo"><span class="logo-mark"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+              stroke="#EEF3EE" stroke-width="1.8">
+              <path d="M4 20c3-6 5-9 8-9s5 3 8 9" />
+              <circle cx="12" cy="7" r="3" />
+            </svg></span> <span data-bind="name">GreenCut</span></div>
+        <p>Professional lawn care for <span data-bind="city">your area</span> and surrounding areas. Locally owned,
+          community-driven, and always green.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Pages</h4>
+        <a href="index.html">Home</a>
+        <a href="services.html">Services</a>
+        <a href="store.html">Shop</a>
+        <a href="reviews.html">Reviews</a>
+        <a href="booking.html">Book Now</a>
+      </div>
+      <div class="footer-col">
+        <h4>Shop</h4>
+        <a href="store.html">Mowers</a>
+        <a href="store.html">Trimmers & Edgers</a>
+        <a href="store.html">Blowers & Vacuums</a>
+        <a href="store.html">Parts & Accessories</a>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <a data-bind-attr="href-tel:phone"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path
+              d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+          </svg><span data-bind="phone">(800) 473-6288</span></a>
+        <a data-bind-attr="href-mailto:email"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="4" width="20" height="16" rx="2" />
+            <path d="m22 7-10 6L2 7" />
+          </svg><span data-bind="email">hello@greencut.com</span></a>
+        <a><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z" />
+            <circle cx="12" cy="10" r="3" />
+          </svg><span data-bind="city">Nationwide, USA</span></a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 <span data-bind="name">GreenCut</span>. All rights reserved.</span>
+      <span>Made with care for <span data-bind="city">greener neighborhoods</span></span>
+    </div>
+  </footer>
+
+  <!-- CART FAB + DRAWER -->
+  <button id="cart-fab" class="cart-fab" aria-label="Open cart">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+      stroke-linejoin="round">
+      <circle cx="9" cy="21" r="1" />
+      <circle cx="20" cy="21" r="1" />
+      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+    </svg>
+    <span id="cart-count" class="cart-count" style="display:none">0</span>
+  </button>
+
+  <div id="cart-overlay" class="cart-overlay"></div>
+
+  <div id="cart-drawer" class="cart-drawer">
+    <div class="cart-drawer-header">
+      <h3>Your Cart</h3>
+      <button id="cart-close-btn" class="cart-close-btn" aria-label="Close cart">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 6 6 18M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div id="cart-items" class="cart-items">
+      <div class="cart-empty">Your cart is empty.<br>Browse equipment and add something to get started.</div>
+    </div>
+    <div class="cart-drawer-footer">
+      <div class="cart-subtotal-row">
+        <span>Subtotal</span>
+        <span id="cart-subtotal">$0.00</span>
+      </div>
+      <button id="cart-checkout-btn" class="btn btn-green" style="width:100%;text-align:center" disabled>
+        Continue to Checkout
+      </button>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+</body>
+
+</html>
