@@ -77,13 +77,13 @@
           Shop &amp; Products
         </a>
 
-        <a href="dashboard.html">
+        <!-- <a href="dashboard.html">
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
             <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
             <polyline points="16 7 22 7 22 13" />
           </svg>
           Sales Analytics
-        </a>
+        </a> -->
 
         <a href="dashboard.html">
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -96,6 +96,14 @@
         <div style="flex:1"></div>
 
         <div class="sidebar-footer">
+          <button onclick="openChangePassword()" class="nav-link"
+            style="display:flex;align-items:center;gap:10px;padding:10px 24px;font-size:13.5px;font-weight:500;color:rgba(238,243,238,.5);background:none;border:none;width:100%;cursor:pointer;transition:color .15s">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <rect x="3" y="11" width="18" height="11" rx="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+            Change Password
+          </button>
           <button id="logout-btn"
             style="display:flex;align-items:center;gap:10px;padding:10px 24px;font-size:13.5px;font-weight:500;color:rgba(238,243,238,.5);background:none;border:none;width:100%;cursor:pointer;transition:color .15s">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
