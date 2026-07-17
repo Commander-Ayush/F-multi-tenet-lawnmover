@@ -34,8 +34,7 @@ async function authedRequest(path, options = {}) {
     },
   });
 
-  if (res.status === 401) {
-    // token missing/expired/invalid — bounce back to login
+  if (res.status === 401 || res.status === 403) {
     goToLogin();
     throw new Error('Session expired');
   }
