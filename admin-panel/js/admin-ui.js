@@ -281,9 +281,8 @@ async function handleReopenOrder(id) {
   catch (err) { alert(err.message); }
 }
 async function handleDeleteOrder(id) {
-  if (!confirm('Delete this order? This cannot be undone.')) return;
-  try { await AdminApi.deleteOrder(id); await loadOrders(); showToast('Order deleted.'); }
-  catch (err) { alert(err.message); }
+  // Routes straight to the modal workflow instead of using confirm()
+  requestDeletion('order', id, false);
 }
 
 function filterOrders(query) {
@@ -547,9 +546,15 @@ function renderProductGrid() {
 }
 
 async function handleDeleteProduct(id) {
-  if (!confirm('Delete this product? This cannot be undone.')) return;
-  try { await AdminApi.deleteProduct(id); await loadProductCatalog(); showToast('Product deleted.'); }
-  catch (err) { alert(err.message); }
+  // 1. Check if any order contains this specific product ID
+  // Your existing orders live in the global variable _allOrders
+  const hasActiveOrders = _allOrders.some(order => {
+    const items = order.items || [];
+    return items.some(item => item.productId === id || item.id === id);
+  });
+
+  // 2. Instead of calling confirm(), pass the relation check to our new modal!
+  requestDeletion('product', id, hasActiveOrders);
 }
 
 /* ── Add / Edit product modal ── */
@@ -763,7 +768,17 @@ document.addEventListener('DOMContentLoaded', () => {
         a.addEventListener('click', (e) => { e.preventDefault(); showPanel(a.dataset.panel); });
       }
     });
-    showPanel('dashboard');
+
+    /* URL Routing Parser */
+    const urlParams = new URLSearchParams(window.location.search);
+    const targetPanel = urlParams.get('panel');
+
+    if (targetPanel) {
+      showPanel(targetPanel);
+    } else {
+      showPanel('dashboard');
+    }
+
     loadDashboard();
   }
 
@@ -789,22 +804,21 @@ document.addEventListener('DOMContentLoaded', () => {
       resetProductImageUI('');
     });
   }
-
-  /* Logout */
-  const logoutBtn = document.getElementById('logout-btn');
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', () => { clearToken(); location.href = 'login.html'; });
-  }
-
-  /* Modal backdrop close */
-  document.querySelectorAll('.modal-overlay').forEach(m => {
-    m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
-  });
-
-  /* Date display */
-  const dateEl = document.getElementById('admin-date');
-  if (dateEl) dateEl.textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 });
+/* Logout */
+const logoutBtn = document.getElementById('logout-btn');
+if (logoutBtn) {
+  logoutBtn.addEventListener('click', () => { clearToken(); location.href = 'login.html'; });
+}
+
+/* Modal backdrop close */
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+});
+
+/* Date display */
+const dateEl = document.getElementById('admin-date');
+if (dateEl) dateEl.textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 /* =====================
    CHANGE PASSWORD MODAL
    ===================== */
@@ -887,4 +901,124 @@ function toggleCpField(inputId, btn) {
   btn.querySelector('svg').innerHTML = isHidden
     ? '<path d="M3 3l18 18"/><path d="M10.6 5.2A10.6 10.6 0 0 1 12 5c7 0 10.5 7 10.5 7a13.5 13.5 0 0 1-3.15 4.15M6.5 6.6C3.6 8.4 1.5 12 1.5 12s3.5 7 10.5 7c1.6 0 3-.3 4.25-.85"/><path d="M9.5 9.9a3.2 3.2 0 0 0 4.6 4.5"/>'
     : '<path d="M1.5 12S5 5 12 5s10.5 7 10.5 7-3.5 7-10.5 7S1.5 12 1.5 12Z"/><circle cx="12" cy="12" r="3.2"/>';
+}
+
+let currentDeleteTarget = null;
+
+// UI SVG Icons configuration matching GreenCut aesthetics
+const modalIcons = {
+  warn: `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
+  loading: `<svg class="spinner" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--forest-800)" stroke-width="2.5" style="animation: spin 1s linear infinite;"><circle cx="12" cy="12" r="10" stroke-dasharray="42 42"/></svg>`,
+  success: `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--moss-500)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`
+};
+
+// Add standard animation styling rules for the spinner programmatically
+if (!document.getElementById('gc-modal-spin-styles')) {
+  const style = document.createElement('style');
+  style.id = 'gc-modal-spin-styles';
+  style.innerHTML = `@keyframes spin { to { transform: rotate(360deg); } }`;
+  document.head.appendChild(style);
+}
+
+/**
+ * Triggers the operational single point-of-entry delete loop
+ * @param {string} type - 'product' or 'order'
+ * @param {string|number} id - Target Identifier 
+ * @param {boolean} [hasRelations=false] - Flag representing whether backend items point to it
+ */
+function requestDeletion(type, id, hasRelations = false) {
+  currentDeleteTarget = { type, id, hasRelations };
+  const modal = document.getElementById('gc-delete-modal');
+  const iconWrap = document.getElementById('delete-modal-icon-wrap');
+  const title = document.getElementById('delete-modal-title');
+  const desc = document.getElementById('delete-modal-desc');
+  const actionContainer = document.getElementById('delete-modal-actions');
+  const closeBtn = document.getElementById('delete-modal-close');
+
+  // Reset base UI interaction controls
+  closeBtn.style.display = 'flex';
+  actionContainer.style.display = 'flex';
+
+  if (type === 'product' && hasRelations) {
+    // Condition Route: Related items lock error mutation
+    iconWrap.style.background = 'var(--amber-pale)';
+    title.innerText = "Cannot Delete Product";
+    desc.innerText = "You have an active order containing this product. Please delete the associated orders first, then try deleting this item.";
+
+    // Morph the action controls to act simply as an acknowledge button
+    actionContainer.innerHTML = `<button class="btn btn-ghost btn-sm" onclick="closeDeleteModal()" style="border-radius: 40px; padding: 9px 32px; background: var(--sage-100)">Got it</button>`;
+  } else {
+    // Condition Route: Standard verification ask logic
+    iconWrap.style.background = 'var(--red-pale)';
+    title.innerText = type === 'product' ? "Delete Product?" : "Delete Order?";
+    desc.innerText = `Are you sure you want to permanently delete this ${type}? This action will disrupt matching datasets immediately.`;
+
+    // Render proper verification actions
+    actionContainer.innerHTML = `
+      <button class="btn btn-ghost btn-sm" onclick="closeDeleteModal()" style="border-radius: 40px; padding: 9px 24px;">Cancel</button>
+      <button class="btn btn-sm" onclick="executeBackendDeletion()" style="background: var(--red); color: #fff; border-radius: 40px; padding: 9px 24px;">Confirm Delete</button>
+    `;
+  }
+
+  modal.classList.add('open');
+}
+
+function closeDeleteModal() {
+  document.getElementById('gc-delete-modal').classList.remove('open');
+  currentDeleteTarget = null;
+}
+
+async function executeBackendDeletion() {
+  if (!currentDeleteTarget) return;
+
+  const iconWrap = document.getElementById('delete-modal-icon-wrap');
+  const title = document.getElementById('delete-modal-title');
+  const desc = document.getElementById('delete-modal-desc');
+  const actionContainer = document.getElementById('delete-modal-actions');
+  const closeBtn = document.getElementById('delete-modal-close');
+
+  // Transition to Processing/Loading State
+  closeBtn.style.display = 'none'; // Lock navigation exits during transition sequences
+  actionContainer.style.display = 'none';
+  iconWrap.style.background = 'var(--sage-100)';
+  iconWrap.innerHTML = modalIcons.loading;
+  title.innerText = "Deleting...";
+  desc.innerText = "Communicating changes to server instances, please hold.";
+
+  try {
+    // ─── CONNECT REAL API ACTIONS HERE ───
+    if (currentDeleteTarget.type === 'product') {
+      await AdminApi.deleteProduct(currentDeleteTarget.id);
+    } else if (currentDeleteTarget.type === 'order') {
+      await AdminApi.deleteOrder(currentDeleteTarget.id);
+    }
+    // ─────────────────────────────────────
+
+    // Transition to Success State
+    iconWrap.style.background = 'var(--sage-100)';
+    iconWrap.innerHTML = modalIcons.success;
+    title.innerText = "Deleted";
+    desc.innerText = "The asset registry was updated successfully.";
+
+    // Enforce clean layout termination precisely after 0.7 seconds
+    setTimeout(() => {
+      closeDeleteModal();
+
+      // Refresh matching table views securely using your file's native functions
+      if (currentDeleteTarget.type === 'product') {
+        loadProductCatalog();
+      } else if (currentDeleteTarget.type === 'order') {
+        loadOrders();
+        loadDashboard(); // Updates dashboard stats too
+      }
+    }, 700);
+
+  } catch (error) {
+    // Emergency Error fallback pathing layout handling
+    closeBtn.style.display = 'flex';
+    iconWrap.style.background = 'var(--red-pale)';
+    iconWrap.innerHTML = modalIcons.warn;
+    title.innerText = "Deletion Failed";
+    desc.innerText = error.message || "An explicit internal transport error occurred. Please verify backend state connectivity logs.";
+  }
 }
