@@ -1,13 +1,4 @@
-/* ============================
-   GreenCut Admin Panel — API layer
-   ============================
-   One central admin panel serves EVERY client — there's no per-business
-   copy of this app. The login endpoint identifies which business an
-   admin belongs to and bakes that into the JWT; every request after
-   that just carries the token. Domain/Origin is never used here.
-*/
-
-const API_BASE = "http://localhost:8080"; // ← same backend address as the storefront
+const API_BASE = "https://growthmultiplier.online";
 
 function getToken() {
   return localStorage.getItem('gc_admin_token');
@@ -92,13 +83,13 @@ const AdminApi = {
   // GET /admin/bookings -> [ BookingDto, ... ]
   getBookings: () => authedGet('/admin/bookings'),
   completeBooking: (id) => authedSend('POST', `/admin/bookings/${id}/complete`),
-  reopenBooking:   (id) => authedSend('POST', `/admin/bookings/${id}/reopen`),
-  deleteBooking:   (id) => authedSend('DELETE', `/admin/bookings/${id}`),
+  reopenBooking: (id) => authedSend('POST', `/admin/bookings/${id}/reopen`),
+  deleteBooking: (id) => authedSend('DELETE', `/admin/bookings/${id}`),
 
   // GET /admin/services -> { services: [...], plans: [...], addons: [...] }
   getServiceCatalog: () => authedGet('/admin/services'),
-  addServiceItem:    (payload) => authedSend('POST', '/admin/services', payload),
-  editServiceItem:   (id, payload) => authedSend('PUT', `/admin/services/${id}`, payload),
+  addServiceItem: (payload) => authedSend('POST', '/admin/services', payload),
+  editServiceItem: (id, payload) => authedSend('PUT', `/admin/services/${id}`, payload),
   deleteServiceItem: (id) => authedSend('DELETE', `/admin/services/${id}`),
 
   // POST /admin/account/password  body: { currentPassword, newPassword }
@@ -108,22 +99,22 @@ const AdminApi = {
   // GET /admin/reviews -> [ ReviewDto, ... ] (all: pending + approved)
   getReviews: () => authedGet('/admin/reviews'),
   approveReview: (id) => authedSend('POST', `/admin/reviews/${id}/approve`),
-  deleteReview:  (id) => authedSend('DELETE', `/admin/reviews/${id}`),
+  deleteReview: (id) => authedSend('DELETE', `/admin/reviews/${id}`),
 
   // GET /admin/products -> [ ProductDto, ... ]  (see CONTRACT.md)
   // ProductDto payload uses `inStock: boolean` — the backend is responsible
   // for translating that into the richer "in-stock"/"low-stock"/"out-of-stock"
   // string the public /products endpoint returns to the storefront.
-  getProducts:    () => authedGet('/admin/products'),
-  addProduct:     (payload) => authedSend('POST', '/admin/products', payload),
-  editProduct:    (id, payload) => authedSend('PUT', `/admin/products/${id}`, payload),
-  deleteProduct:  (id) => authedSend('DELETE', `/admin/products/${id}`),
+  getProducts: () => authedGet('/admin/products'),
+  addProduct: (payload) => authedSend('POST', '/admin/products', payload),
+  editProduct: (id, payload) => authedSend('PUT', `/admin/products/${id}`, payload),
+  deleteProduct: (id) => authedSend('DELETE', `/admin/products/${id}`),
 
   // GET /admin/orders -> [ OrderDto, ... ] — equipment purchase requests
   // submitted from the storefront's /store.html checkout (POST /orders).
   // Same shape/lifecycle as bookings: pending until marked fulfilled.
-  getOrders:      () => authedGet('/admin/orders'),
-  fulfillOrder:   (id) => authedSend('POST', `/admin/orders/${id}/complete`),
-  reopenOrder:    (id) => authedSend('POST', `/admin/orders/${id}/reopen`),
-  deleteOrder:    (id) => authedSend('DELETE', `/admin/orders/${id}`),
+  getOrders: () => authedGet('/admin/orders'),
+  fulfillOrder: (id) => authedSend('POST', `/admin/orders/${id}/complete`),
+  reopenOrder: (id) => authedSend('POST', `/admin/orders/${id}/reopen`),
+  deleteOrder: (id) => authedSend('DELETE', `/admin/orders/${id}`),
 };

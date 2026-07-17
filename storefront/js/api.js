@@ -1,16 +1,4 @@
-/* ============================
-   GreenCut Storefront — API layer
-   ============================
-   Every public page talks to the backend through THIS file only.
-   One constant to change when you go live — nothing else in the
-   frontend needs to know or care where the backend lives.
-
-   Tenant resolution: the backend identifies which business this is
-   purely from the browser's automatic `Origin` header — we never
-   send a company id from here. See CONTRACT.md for the full spec.
-*/
-
-const API_BASE = "http://localhost:8080"; // ← change this once, to your VPS's address, when going live
+const API_BASE = "https://growthmultiplier.online";
 
 async function apiGet(path) {
   const res = await fetch(API_BASE + path);
