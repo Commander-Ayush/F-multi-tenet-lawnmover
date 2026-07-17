@@ -1429,7 +1429,8 @@ tbody td {
 /* === SHOP: PRODUCT GRID === */
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(260px, 340px));
+  justify-content: center;
   gap: 24px;
   margin-top: 40px;
 }
@@ -1443,6 +1444,9 @@ tbody td {
   transition: transform var(--transition), box-shadow var(--transition);
   display: flex;
   flex-direction: column;
+  max-width: 340px;
+  width: 100%;
+  justify-self: center;
 }
 
 .product-card:hover {

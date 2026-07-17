@@ -1,11 +1,3 @@
-/* ============================
-   GreenCut Admin Panel — UI logic
-   ============================
-   Identical functionality to the original — only class names updated
-   to match the redesigned markup. All API calls, IDs, and data flow
-   are preserved exactly.
-*/
-
 /* ── Token helpers (keep in sync with admin-api.js) ── */
 function getToken() { return localStorage.getItem('gc_admin_token'); }
 function setToken(t) { localStorage.setItem('gc_admin_token', t); }
