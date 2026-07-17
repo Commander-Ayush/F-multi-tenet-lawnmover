@@ -1,19 +1,5 @@
-/* ============================
-   Cloudinary image upload (unsigned)
-   ============================
-   Fill these two values in from your Cloudinary dashboard:
-   - Cloud Name: shown top-right of the Cloudinary console.
-   - Upload Preset: Settings → Upload → Upload presets → Add upload preset
-     → set "Signing Mode" to "Unsigned" → save → copy its name here.
-
-   Why unsigned uploads: they let the browser upload straight to Cloudinary
-   without your backend ever touching the image bytes or needing an API
-   secret client-side. The resulting secure_url is just a normal string
-   the admin panel saves onto the product like any other field — your
-   backend doesn't need to know Cloudinary exists at all.
-*/
-const CLOUDINARY_CLOUD_NAME = "YOUR_CLOUD_NAME";       // ← replace me
-const CLOUDINARY_UPLOAD_PRESET = "YOUR_UPLOAD_PRESET"; // ← replace me
+const CLOUDINARY_CLOUD_NAME = "do6v2ghbb";
+const CLOUDINARY_UPLOAD_PRESET = "lawnmovers";
 
 async function uploadImageToCloudinary(file) {
   if (CLOUDINARY_CLOUD_NAME === "YOUR_CLOUD_NAME") {
